@@ -75,4 +75,33 @@ class AdminAuthTest extends TestCase
             ->post(route('admin.events.store'), ['name' => 'Hack'])
             ->assertForbidden();
     }
+
+    public function test_login_locked_after_repeated_failures(): void
+    {
+        User::factory()->admin()->create([
+            'email' => 'admin@example.com',
+            'password' => 'password',
+        ]);
+
+        for ($i = 0; $i < 5; $i++) {
+            $this->post(route('admin.login.attempt'), [
+                'email' => 'admin@example.com',
+                'password' => 'wrong-password',
+            ]);
+        }
+
+        // Percobaan ke-6 harus diblokir dengan pesan throttle.
+        $this->post(route('admin.login.attempt'), [
+            'email' => 'admin@example.com',
+            'password' => 'wrong-password',
+        ])->assertSessionHasErrors('email');
+
+        // Bahkan password benar pun ditolak selama lockout.
+        $this->post(route('admin.login.attempt'), [
+            'email' => 'admin@example.com',
+            'password' => 'password',
+        ])->assertSessionHasErrors('email');
+
+        $this->assertGuest();
+    }
 }

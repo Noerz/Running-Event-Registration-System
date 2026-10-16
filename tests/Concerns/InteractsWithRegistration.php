@@ -65,7 +65,8 @@ trait InteractsWithRegistration
             'emergency_contact_phone' => '081298765432',
             'payment_method' => 'transfer_bank',
             'amount' => 100000,
-            'payment_proof' => UploadedFile::fake()->image('proof.jpg'),
+            // create() (bukan image()) agar tidak bergantung pada ekstensi PHP GD.
+            'payment_proof' => UploadedFile::fake()->create('proof.jpg', 10, 'image/jpeg'),
             'agree_terms' => '1',
         ];
     }

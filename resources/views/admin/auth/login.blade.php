@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login Admin — RunEventReg</title>
+    <title>Login Admin — KATAR FUN RUN REG</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,8 +14,8 @@
 <body class="grid min-h-screen place-items-center bg-slate-50 px-4 font-sans antialiased">
     <div class="w-full max-w-sm">
         <div class="mb-8">
-            <div class="flex items-center gap-2.5">
-                <img src="{{ asset('images/Logo.png') }}" alt="Logo RunEventReg" class="h-9 w-auto">
+            <div class="flex items-center gap-3">
+                <img src="{{ asset('images/Logo.png') }}" alt="Logo KATAR FUN RUN REG" class="h-11 w-auto max-w-[48px] shrink-0 object-contain">
                 <span class="font-display text-lg font-bold uppercase tracking-tight text-slate-900">RunEvent<span class="text-primary-600">Reg</span></span>
             </div>
             <h1 class="mt-6 font-display text-xl font-bold uppercase tracking-tight text-slate-900">Login Panitia</h1>

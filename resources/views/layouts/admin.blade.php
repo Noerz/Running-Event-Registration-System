@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'Dashboard Admin') — RunEventReg</title>
+    <title>@yield('title', 'Dashboard Admin') — KATAR FUN RUN REG</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,8 +22,8 @@
     <!-- Sidebar -->
     <aside class="fixed inset-y-0 left-0 z-40 w-60 -translate-x-full border-r border-slate-200 bg-white transition-transform duration-200 lg:translate-x-0"
         :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
-        <div class="flex h-16 items-center gap-2.5 border-b border-slate-200 px-5">
-            <img src="{{ asset('images/Logo.png') }}" alt="Logo RunEventReg" class="h-8 w-auto">
+        <div class="flex h-16 items-center gap-3 border-b border-slate-200 px-5">
+            <img src="{{ asset('images/Logo.png') }}" alt="Logo KATAR FUN RUN REG" class="h-10 w-auto max-w-[44px] shrink-0 object-contain">
             <span class="font-display text-base font-bold uppercase tracking-tight text-slate-900">RunEvent<span class="text-primary-600">Reg</span></span>
         </div>
 

@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', $event ? $event->name.' — Pendaftaran Online' : 'RunEventReg')
+@section('title', $event ? $event->name.' — Pendaftaran Online' : 'KATAR FUN RUN REG')
 
 @section('content')
     @if ($event)

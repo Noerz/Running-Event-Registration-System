@@ -17,6 +17,13 @@
             <p class="mt-1 font-mono text-sm font-bold text-slate-500">{{ $participant->registration_code }}</p>
         </div>
 
+        <div class="flex flex-col items-start gap-2 sm:items-end">
+            <a href="{{ route('admin.participants.edit', $participant) }}"
+                class="inline-flex items-center gap-2 rounded-sm bg-slate-800 px-5 py-2.5 text-sm font-bold text-white hover:bg-slate-700">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
+                Edit Data Peserta
+            </a>
+
         @if ($participant->payment->payment_status === \App\Enums\PaymentStatus::Pending)
             <div class="flex flex-col gap-2 sm:flex-row">
                 <button type="button"
@@ -42,6 +49,21 @@
                     Reject Payment
                 </button>
             </div>
+        @elseif ($participant->payment->payment_status === \App\Enums\PaymentStatus::Rejected)
+            <details class="rounded-sm border border-red-200 bg-red-50/50 px-4 py-3">
+                <summary class="cursor-pointer text-sm font-semibold text-red-800">Peserta kirim ulang bukti?</summary>
+                <form method="POST" action="{{ route('admin.participants.resubmit-proof', $participant) }}" enctype="multipart/form-data" class="mt-3 space-y-2">
+                    @csrf
+                    <input type="file" name="payment_proof" accept=".jpg,.jpeg,.png,image/jpeg,image/png" required
+                        class="block w-full text-xs text-slate-600 file:mr-3 file:cursor-pointer file:border file:border-solid file:border-slate-300 file:bg-white file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-slate-700">
+                    @error('payment_proof')
+                        <p class="text-xs font-medium text-red-600">{{ $message }}</p>
+                    @enderror
+                    <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-sm bg-red-600 px-4 py-2 text-xs font-bold text-white hover:bg-red-700">
+                        Simpan Bukti Baru (kembali ke Pending)
+                    </button>
+                </form>
+            </details>
         @else
             <div class="rounded-sm bg-slate-100 px-4 py-2.5 text-sm text-slate-600">
                 Diverifikasi oleh <strong>{{ $participant->payment->verifiedBy?->name ?? '-' }}</strong>
@@ -50,6 +72,7 @@
                 @endif
             </div>
         @endif
+        </div>
     </div>
 
     <div class="mt-6 grid gap-6 xl:grid-cols-3">

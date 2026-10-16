@@ -28,6 +28,10 @@ class RegistrationService
                 throw new RuntimeException('Kuota kategori '.$category->name.' sudah penuh.');
             }
 
+            if ($this->alreadyRegistered($event, $data['email'])) {
+                throw new RuntimeException('Email '.$data['email'].' sudah terdaftar pada event ini.');
+            }
+
             $participant = Participant::create([
                 ...$this->participantAttributes($data),
                 'event_id' => $event->getKey(),
@@ -54,6 +58,19 @@ class RegistrationService
         );
 
         return $participant->refresh();
+    }
+
+    /**
+     * Batasi pendaftaran: satu email hanya boleh terdaftar sekali per event.
+     * Pengecualian: pendaftaran yang ditolak tidak menghalangi email yang sama
+     * mendaftar ulang setelah memperbaiki pembayaran.
+     */
+    private function alreadyRegistered(Event $event, string $email): bool
+    {
+        return $event->participants()
+            ->where('email', $email)
+            ->whereNot('registration_status', RegistrationStatus::Rejected->value)
+            ->exists();
     }
 
     private function resolveOpenCategory(int|string $categoryId, bool $lock = false): array

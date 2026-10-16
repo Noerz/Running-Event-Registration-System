@@ -43,7 +43,7 @@ class AdminParticipantPageTest extends TestCase
     public function test_admin_can_download_private_payment_proof(): void
     {
         Storage::fake('local');
-        Storage::disk('local')->put('payment-proofs/proof.png', UploadedFile::fake()->image('proof.png')->getContent());
+        Storage::disk('local')->put('payment-proofs/proof.png', UploadedFile::fake()->create('proof.png', 10, 'image/png')->getContent());
 
         $admin = $this->createAdmin();
         $event = $this->createOpenEvent();

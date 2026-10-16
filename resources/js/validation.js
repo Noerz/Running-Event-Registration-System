@@ -101,6 +101,18 @@ export function registerFieldValidator(Alpine) {
     );
 }
 
+// Field dengan data pribadi sensitif tidak disimpan ke localStorage,
+// agar tidak tertinggal di perangkat yang dipakai bersama.
+const draftSensitiveFields = new Set([
+    'identity_number',
+    'address',
+    'city',
+    'province',
+    'birth_date',
+    'emergency_contact_name',
+    'emergency_contact_phone',
+]);
+
 export function registerFormDraft(Alpine) {
     Alpine.data('formDraft', (key) => ({
         init() {
@@ -113,6 +125,8 @@ export function registerFormDraft(Alpine) {
             }
 
             for (const [name, value] of Object.entries(saved)) {
+                if (draftSensitiveFields.has(name)) continue;
+
                 const input = this.$el.elements[name];
 
                 if (! input || input.type === 'file' || input.value) continue;
@@ -133,6 +147,7 @@ export function registerFormDraft(Alpine) {
 
             for (const input of Array.from(this.$el.elements)) {
                 if (! input.name || input.type === 'file' || input.type === 'hidden' || input.disabled) continue;
+                if (draftSensitiveFields.has(input.name)) continue;
 
                 data[input.name] = input.type === 'checkbox'
                     ? (input.checked ? input.value : '')

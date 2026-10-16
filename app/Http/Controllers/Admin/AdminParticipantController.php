@@ -3,8 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UpdateParticipantRequest;
+use App\Models\ActivityLog;
 use App\Models\Participant;
+use App\Models\RaceCategory;
+use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -33,7 +38,7 @@ class AdminParticipantController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        $filterCategories = \App\Models\RaceCategory::query()->orderBy('distance')->get();
+        $filterCategories = RaceCategory::query()->orderBy('distance')->get();
 
         return view('admin.participants.index', [
             'participants' => $participants,
@@ -46,6 +51,34 @@ class AdminParticipantController extends Controller
         $participant->load(['event', 'raceCategory', 'payment.verifiedBy']);
 
         return view('admin.participants.show', ['participant' => $participant]);
+    }
+
+    public function edit(Participant $participant): View
+    {
+        $participant->load(['event', 'raceCategory']);
+
+        return view('admin.participants.edit', [
+            'participant' => $participant,
+        ]);
+    }
+
+    public function update(UpdateParticipantRequest $request, Participant $participant): RedirectResponse
+    {
+        $data = $request->validated();
+        $data['age'] = Carbon::parse($data['birth_date'])->age;
+
+        $participant->update($data);
+
+        ActivityLog::record(
+            action: 'participant_updated',
+            subject: $participant,
+            adminId: $request->user()->getKey(),
+            description: "Data peserta {$participant->registration_code} diperbarui oleh {$request->user()->name}.",
+        );
+
+        return redirect()
+            ->route('admin.participants.show', $participant)
+            ->with('success', 'Data peserta berhasil diperbarui.');
     }
 
     /**

@@ -41,7 +41,8 @@ Route::post('/check-registration', [StatusCheckController::class, 'check'])
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware('guest')->group(function () {
         Route::get('login', [AdminLoginController::class, 'create'])->name('login');
-        Route::post('login', [AdminLoginController::class, 'store'])->middleware('throttle:5,1')->name('login.attempt');
+        // Rate limiting login dikelola di AdminLoginService (lockout per email+IP).
+        Route::post('login', [AdminLoginController::class, 'store'])->name('login.attempt');
     });
 
     Route::post('logout', [AdminLoginController::class, 'destroy'])
@@ -53,6 +54,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('participants', [AdminParticipantController::class, 'index'])->name('participants.index');
         Route::get('participants/{participant}', [AdminParticipantController::class, 'show'])->name('participants.show');
+        Route::get('participants/{participant}/edit', [AdminParticipantController::class, 'edit'])->name('participants.edit');
+        Route::put('participants/{participant}', [AdminParticipantController::class, 'update'])->name('participants.update');
         Route::get('participants/{participant}/payment-proof', [AdminParticipantController::class, 'paymentProof'])
             ->name('participants.payment-proof');
 
@@ -60,6 +63,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
             ->name('participants.approve');
         Route::post('participants/{participant}/reject', [ParticipantVerificationController::class, 'reject'])
             ->name('participants.reject');
+        Route::post('participants/{participant}/resubmit-proof', [ParticipantVerificationController::class, 'resubmitProof'])
+            ->name('participants.resubmit-proof');
 
         Route::resource('events', AdminEventController::class)
             ->except(['show'])

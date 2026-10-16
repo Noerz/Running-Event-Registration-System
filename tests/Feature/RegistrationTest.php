@@ -85,9 +85,10 @@ class RegistrationTest extends TestCase
 
         $participant = Participant::query()->firstOrFail();
 
-        // URL tanpa signature harus ditolak (anti-enumeration registration code).
+        // URL tanpa signature ditolak dan diarahkan ke cek status (anti-enumeration registration code).
         $this->get(route('registration.success', $participant->registration_code))
-            ->assertForbidden();
+            ->assertRedirect(route('check.show'))
+            ->assertSessionHas('info');
     }
 
     public function test_registration_validation_fails_with_invalid_data(): void

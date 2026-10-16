@@ -272,7 +272,7 @@ php artisan queue:work
 ## 5. Contoh Konfigurasi `.env`
 
 ```env
-APP_NAME="RunEventReg"
+APP_NAME="KATAR FUN RUN REG"
 APP_ENV=production          # local saat development
 APP_KEY=                    # php artisan key:generate
 APP_DEBUG=false             # true hanya saat development

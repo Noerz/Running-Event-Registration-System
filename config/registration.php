@@ -11,6 +11,11 @@ return [
     // Batas maksimal ukuran bukti pembayaran dalam KB (2 MB).
     'payment_proof_max_kb' => env('PAYMENT_PROOF_MAX_KB', 2048),
 
+    // Pendaftaran pending yang tidak diverifikasi dalam N hari akan
+    // otomatis dibatalkan oleh command `participants:expire-pending`,
+    // sehingga slot kuota kembali tersedia.
+    'pending_expiry_days' => env('PENDING_EXPIRY_DAYS', 7),
+
     // Disk penyimpanan bukti pembayaran. Gunakan disk privat, bukan public.
     'payment_proof_disk' => env('PAYMENT_PROOF_DISK', 'local'),
 

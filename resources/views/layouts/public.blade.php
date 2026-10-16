@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'RunEventReg — Pendaftaran Event Lari')</title>
+    <title>@yield('title', 'KATAR FUN RUN REG — Pendaftaran Event Lari')</title>
     <meta name="description" content="Pendaftaran event lari — daftar, bayar, dan terima nomor peserta (BIB) Anda secara online.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,9 +20,9 @@
     <!-- Navbar -->
     <header x-data="{ mobileOpen: false }" class="sticky top-0 z-40 border-b border-slate-200 bg-white">
         <nav class="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8" aria-label="Main">
-            <a href="{{ route('home') }}" class="flex items-center gap-2.5">
-                <img src="{{ asset('images/Logo.png') }}" alt="Logo RunEventReg" class="h-9 w-auto">
-                <span class="font-display text-lg font-bold uppercase tracking-tight text-slate-900">RunEvent<span class="text-primary-600">Reg</span></span>
+            <a href="{{ route('home') }}" class="flex items-center gap-3">
+                <img src="{{ asset('images/Logo.png') }}" alt="Logo KATAR FUN RUN REG" class="h-100 w-auto max-w-[48px] shrink-0 object-contain">
+                <span class="font-display text-lg font-bold uppercase tracking-tight text-slate-900">KatarFun<span class="text-primary-600">Run</span></span>
             </a>
 
             <div class="hidden items-center gap-6 md:flex">
@@ -54,11 +54,11 @@
     <!-- Footer -->
     <footer class="border-t border-slate-200 bg-white">
         <div class="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-8 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-            <div class="flex items-center gap-2.5">
-                <img src="{{ asset('images/Logo.png') }}" alt="" class="h-7 w-auto">
+            <div class="flex items-center gap-3">
+                <img src="{{ asset('images/Logo.png') }}" alt="Logo KATAR FUN RUN REG" class="h-100 w-auto max-w-[40px] shrink-0 object-contain">
                 <span class="font-display text-sm font-bold uppercase tracking-tight text-slate-900">RunEvent<span class="text-primary-600">Reg</span></span>
             </div>
-            <p class="text-xs text-slate-400">&copy; {{ date('Y') }} RunEventReg By Noerz</p>
+            <p class="text-xs text-slate-400">&copy; {{ date('Y') }} KATAR FUN RUN REG By Noerz</p>
         </div>
     </footer>
 

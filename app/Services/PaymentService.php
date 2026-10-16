@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Throwable;
 
 class PaymentService
@@ -151,6 +152,63 @@ class PaymentService
             subject: $participant,
             adminId: $admin->getKey(),
             description: "Pembayaran {$participant->registration_code} ditolak oleh {$admin->name}: {$reason}",
+        );
+
+        return true;
+    }
+
+    /**
+     * Menerima ulang bukti pembayaran untuk pendaftaran yang ditolak:
+     * bukti lama dihapus, bukti baru disimpan, status kembali ke pending.
+     *
+     * Mengembalikan false bila status bukan rejected (sudah final / tidak layak).
+     */
+    public function resubmitProof(Participant $participant, $proofFile, User $admin): bool
+    {
+        $resubmitted = DB::transaction(function () use ($participant, $proofFile) {
+            /** @var Participant $locked */
+            $locked = Participant::query()
+                ->whereKey($participant->getKey())
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            $payment = $locked->payment()->lockForUpdate()->firstOrFail();
+
+            if ($payment->payment_status !== PaymentStatus::Rejected) {
+                return false;
+            }
+
+            // Simpan dulu yang baru, hapus yang lama setelah sukses.
+            $newPath = $proofFile->store('payment-proofs', config('registration.payment_proof_disk'));
+
+            if ($payment->payment_proof) {
+                Storage::disk(config('registration.payment_proof_disk'))->delete($payment->payment_proof);
+            }
+
+            $payment->update([
+                'payment_proof' => $newPath,
+                'payment_status' => PaymentStatus::Pending,
+                'rejection_reason' => null,
+                'verified_by' => null,
+                'verified_at' => null,
+            ]);
+
+            $locked->forceFill([
+                'registration_status' => RegistrationStatus::Pending,
+            ])->save();
+
+            return true;
+        });
+
+        if (! $resubmitted) {
+            return false;
+        }
+
+        ActivityLog::record(
+            action: 'payment_resubmitted',
+            subject: $participant,
+            adminId: $admin->getKey(),
+            description: "Bukti pembayaran {$participant->registration_code} diganti oleh {$admin->name}; status kembali menunggu verifikasi.",
         );
 
         return true;
