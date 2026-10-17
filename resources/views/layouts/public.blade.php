@@ -6,12 +6,12 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>@yield('title', 'KATAR FUN RUN REG — Pendaftaran Event Lari')</title>
-    <meta name="description" content="Pendaftaran event lari — daftar, bayar, dan terima nomor peserta (BIB) Anda secara online.">
+    <meta name="description" content="@yield('description', 'Pendaftaran event lari — daftar, bayar, dan terima nomor peserta (BIB) Anda secara online.')">
+    <link rel="canonical" href="{{ url()->current() }}">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-
+    {{-- Font di-host sendiri lewat app.css: tidak ada request render-blocking ke Google Fonts. --}}
+    <link rel="preload" href="{{ Vite::asset('resources/fonts/archivo-latin.woff2') }}" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="{{ Vite::asset('resources/fonts/inter-latin.woff2') }}" as="font" type="font/woff2" crossorigin>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
@@ -21,8 +21,8 @@
     <header x-data="{ mobileOpen: false }" class="sticky top-0 z-40 border-b border-slate-200 bg-white">
         <nav class="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8" aria-label="Main">
             <a href="{{ route('home') }}" class="flex items-center gap-3">
-                <img src="{{ asset('images/Logo.png') }}" alt="Logo KATAR FUN RUN REG" class="h-100 w-auto max-w-[48px] shrink-0 object-contain">
-                <span class="font-display text-lg font-bold uppercase tracking-tight text-slate-900">KatarFun<span class="text-primary-600">Run</span></span>
+                <img src="{{ asset('images/logo-160.png') }}" alt="Logo KATAR FUN RUN REG" width="40" height="50" class="h-10 w-auto shrink-0 object-contain">
+                <span class="font-display text-lg font-bold uppercase tracking-tight text-slate-900">KatarFun<span class="text-primary-700">Run</span></span>
             </a>
 
             <div class="hidden items-center gap-6 md:flex">
@@ -55,10 +55,10 @@
     <footer class="border-t border-slate-200 bg-white">
         <div class="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-8 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
             <div class="flex items-center gap-3">
-                <img src="{{ asset('images/Logo.png') }}" alt="Logo KATAR FUN RUN REG" class="h-100 w-auto max-w-[40px] shrink-0 object-contain">
-                <span class="font-display text-sm font-bold uppercase tracking-tight text-slate-900">RunEvent<span class="text-primary-600">Reg</span></span>
+                <img src="{{ asset('images/logo-160.png') }}" alt="Logo KATAR FUN RUN REG" width="32" height="40" class="h-8 w-auto shrink-0 object-contain">
+                <span class="font-display text-sm font-bold uppercase tracking-tight text-slate-900">RunEvent<span class="text-primary-700">Reg</span></span>
             </div>
-            <p class="text-xs text-slate-400">&copy; {{ date('Y') }} KATAR FUN RUN REG By Noerz</p>
+            <p class="text-xs text-slate-600">&copy; {{ date('Y') }} KATAR FUN RUN REG By Noerz</p>
         </div>
     </footer>
 

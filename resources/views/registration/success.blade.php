@@ -5,7 +5,7 @@
 @section('content')
     <div class="mx-auto max-w-xl px-4 py-16 sm:py-24">
         <div class="border border-slate-200 bg-white p-8 sm:p-12">
-            <span class="flex h-14 w-14 items-center justify-center border border-green-600 text-green-600">
+            <span class="flex h-14 w-14 items-center justify-center border border-green-700 text-green-700">
                 <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
@@ -15,7 +15,7 @@
             <p class="mt-3 leading-relaxed text-slate-500">Terima kasih, <strong class="text-slate-800">{{ $participant->full_name }}</strong>. Pendaftaran Anda berhasil dikirim.</p>
 
             <div class="mt-8 border-y-2 border-slate-900 py-6 text-center">
-                <p class="eyebrow text-slate-400">Registration Code Anda</p>
+                <p class="eyebrow text-slate-600">Registration Code Anda</p>
                 <p class="mt-2 select-all font-display text-3xl font-bold tracking-wider text-slate-900">{{ $participant->registration_code }}</p>
                 <div class="mt-4">
                     <x-status-badge :status="$participant->registration_status" />

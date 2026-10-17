@@ -41,7 +41,7 @@
                             <td class="whitespace-nowrap px-5 py-3.5 tabular-nums">
                                 {{ $category->registered_count }} / {{ number_format($category->quota) }}
                                 @if ($category->remainingQuota() < 1)
-                                    <span class="ml-1 text-xs font-bold text-red-600">PENUH</span>
+                                    <span class="ml-1 text-xs font-bold text-red-700">PENUH</span>
                                 @endif
                             </td>
                             <td class="px-5 py-3.5">

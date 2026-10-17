@@ -32,7 +32,7 @@
                         <tr class="hover:bg-slate-50/70">
                             <td class="px-5 py-3.5">
                                 <p class="font-semibold text-slate-800">{{ $event->name }}</p>
-                                <p class="text-xs text-slate-400">{{ $event->location }}</p>
+                                <p class="text-xs text-slate-600">{{ $event->location }}</p>
                             </td>
                             <td class="whitespace-nowrap px-5 py-3.5 hidden md:table-cell">{{ $event->event_date->translatedFormat('d M Y') }}</td>
                             <td class="whitespace-nowrap px-5 py-3.5 hidden lg:table-cell">{{ $event->registration_start->translatedFormat('d M') }} — {{ $event->registration_end->translatedFormat('d M Y') }}</td>

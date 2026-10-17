@@ -6,7 +6,7 @@
     <!-- Header -->
     <div class="border-b border-slate-200">
         <div class="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-            <p class="eyebrow text-primary-600">Pendaftaran</p>
+            <p class="eyebrow text-primary-700">Pendaftaran</p>
             <h1 class="mt-2 font-display text-3xl font-extrabold uppercase tracking-tight text-slate-900 sm:text-4xl">Form Pendaftaran</h1>
             <p class="mt-3 text-sm text-slate-500">{{ $event->name }} — {{ $event->event_date->translatedFormat('l, d F Y') }}, {{ $event->location }}</p>
         </div>
@@ -20,7 +20,7 @@
         <!-- Data Pribadi -->
         <section>
             <h2 class="flex items-baseline gap-3 border-b border-slate-900 pb-3">
-                <span class="font-display text-sm font-bold tabular-nums text-primary-600">01</span>
+                <span class="font-display text-sm font-bold tabular-nums text-primary-700">01</span>
                 <span class="font-display text-lg font-bold uppercase tracking-tight text-slate-900">Data Pribadi</span>
             </h2>
 
@@ -43,7 +43,7 @@
         <!-- Data Perlombaan -->
         <section id="kategori" class="mt-12">
             <h2 class="flex items-baseline gap-3 border-b border-slate-900 pb-3">
-                <span class="font-display text-sm font-bold tabular-nums text-primary-600">02</span>
+                <span class="font-display text-sm font-bold tabular-nums text-primary-700">02</span>
                 <span class="font-display text-lg font-bold uppercase tracking-tight text-slate-900">Data Perlombaan</span>
             </h2>
 
@@ -65,10 +65,10 @@
                         @endforeach
                     </select>
                     @error('race_category_id')
-                        <p class="mt-1.5 text-xs font-medium text-red-600">{{ $message }}</p>
+                        <p class="mt-1.5 text-xs font-medium text-red-700">{{ $message }}</p>
                     @enderror
                     <p x-show="err && err !== @js($errors->first('race_category_id'))" x-text="err" x-cloak
-                        class="mt-1.5 text-xs font-medium text-red-600"></p>
+                        class="mt-1.5 text-xs font-medium text-red-700"></p>
                 </div>
 
                 <x-form-field name="jersey_size" label="Ukuran Jersey" type="select" required rules="required" :options="array_combine(config('registration.jersey_sizes'), config('registration.jersey_sizes'))">
@@ -87,7 +87,7 @@
         <!-- Pembayaran -->
         <section class="mt-12">
             <h2 class="flex items-baseline gap-3 border-b border-slate-900 pb-3">
-                <span class="font-display text-sm font-bold tabular-nums text-primary-600">03</span>
+                <span class="font-display text-sm font-bold tabular-nums text-primary-700">03</span>
                 <span class="font-display text-lg font-bold uppercase tracking-tight text-slate-900">Pembayaran</span>
             </h2>
 
@@ -98,12 +98,12 @@
                         <option value="">-- Pilih metode --</option>
                     </x-form-field>
                     <button type="button" x-show="selected === 'transfer_bank'" @click="$dispatch('open-bank')"
-                        class="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-primary-600 hover:text-primary-700 hover:underline">
+                        class="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-primary-700 hover:text-primary-700 hover:underline">
                         <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z"/></svg>
                         Lihat Rekening Tujuan
                     </button>
                     <button type="button" x-show="selected === 'qris'" x-cloak @click="$dispatch('open-qris')"
-                        class="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-primary-600 hover:text-primary-700 hover:underline">
+                        class="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-primary-700 hover:text-primary-700 hover:underline">
                         <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5z"/></svg>
                         Lihat Kode QRIS
                     </button>
@@ -124,10 +124,10 @@
                         @change="check($event.target)">
                     <p class="mt-1.5 text-xs text-slate-500" x-show="!err" x-cloak>Format JPG, JPEG, atau PNG. Maksimal {{ number_format($maxKb / 1024, $maxKb % 1024 === 0 ? 0 : 1) }} MB. Jika pakai iPhone, pilih ukuran file kecil/sedang saat upload.</p>
                     @error('payment_proof')
-                        <p class="mt-1.5 flex items-start gap-1 text-xs font-medium text-red-600">{{ $message }}</p>
+                        <p class="mt-1.5 flex items-start gap-1 text-xs font-medium text-red-700">{{ $message }}</p>
                     @enderror
                     <p x-show="err && err !== @js($errors->first('payment_proof'))" x-text="err" x-cloak
-                        class="mt-1.5 flex items-start gap-1 text-xs font-medium text-red-600"></p>
+                        class="mt-1.5 flex items-start gap-1 text-xs font-medium text-red-700"></p>
                 </div>
             </div>
         </section>
@@ -136,19 +136,19 @@
         <section class="mt-12 border-t border-slate-200 pt-6">
             <label class="flex items-start gap-3">
                 <input type="checkbox" name="agree_terms" value="1" required
-                    class="mt-0.5 h-4 w-4 shrink-0 rounded-none border-slate-300 text-primary-600 focus:ring-primary-600">
+                    class="mt-0.5 h-4 w-4 shrink-0 rounded-none border-slate-300 text-primary-700 focus:ring-primary-600">
                 <span class="text-sm leading-relaxed text-slate-600">
                     Saya menyatakan bahwa data yang saya masukkan benar dan menyetujui syarat dan ketentuan event.
                 </span>
             </label>
-            @error('agree_terms')<p class="mt-2 text-xs font-medium text-red-600">{{ $message }}</p>@enderror
+            @error('agree_terms')<p class="mt-2 text-xs font-medium text-red-700">{{ $message }}</p>@enderror
         </section>
 
         <div class="sticky bottom-0 mt-10 flex flex-col gap-3 border-t border-slate-200 bg-white py-4 sm:flex-row-reverse sm:items-center sm:justify-between">
             <button type="submit" class="btn-primary !px-8 !py-3 !text-base">
                 Kirim Pendaftaran
             </button>
-            <p class="text-xs text-slate-400">Data akan diverifikasi panitia sebelum BIB Number diterbitkan.</p>
+            <p class="text-xs text-slate-600">Data akan diverifikasi panitia sebelum BIB Number diterbitkan.</p>
         </div>
     </form>
 @endsection

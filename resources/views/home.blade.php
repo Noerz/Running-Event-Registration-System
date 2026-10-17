@@ -9,9 +9,9 @@
             <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:gap-16 lg:py-20 lg:px-8">
                 <div>
                     @if ($isRegistrationOpen)
-                        <p class="eyebrow text-primary-600">Pendaftaran Dibuka</p>
+                        <p class="eyebrow text-primary-700">Pendaftaran Dibuka</p>
                     @else
-                        <p class="eyebrow text-red-600">Pendaftaran Ditutup</p>
+                        <p class="eyebrow text-red-700">Pendaftaran Ditutup</p>
                     @endif
 
                     <h1 class="mt-3 font-display text-4xl font-extrabold uppercase leading-[0.95] tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
@@ -34,9 +34,9 @@
 
                 <figure class="hidden lg:block">
                     {{-- Ganti public/images/hero.jpg dengan foto event Anda --}}
-                    <img src="{{ asset('images/hero.jpg') }}" alt="Foto suasana lomba"
+                    <img src="{{ asset('images/hero-900.jpg') }}" alt="Foto suasana lomba" width="900" height="837"
                         class="aspect-[4/5] w-full object-cover grayscale-[15%]">
-                    <figcaption class="mt-2 text-right text-xs text-slate-400">{{ $event->location }} — {{ $event->event_date->translatedFormat('Y') }}</figcaption>
+                    <figcaption class="mt-2 text-right text-xs text-slate-600">{{ $event->location }} — {{ $event->event_date->translatedFormat('Y') }}</figcaption>
                 </figure>
             </div>
         </section>
@@ -45,12 +45,12 @@
         @if ($isRegistrationOpen && $event->event_date->isFuture())
             <section class="border-b border-slate-200 bg-white">
                 <div x-data="countdown('{{ $event->event_date->toIso8601String() }}')" class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-                    <p class="eyebrow text-slate-400">Menuju Hari-H</p>
+                    <p class="eyebrow text-slate-600">Menuju Hari-H</p>
                     <div class="mt-3 grid max-w-lg grid-cols-4 divide-x divide-slate-200 border border-slate-200">
                         @foreach ([['Hari', 'days'], ['Jam', 'hours'], ['Menit', 'minutes'], ['Detik', 'seconds']] as [$labelText, $key])
                             <div class="px-2 py-4 text-center">
                                 <div class="font-display text-3xl font-bold tabular-nums text-slate-900 sm:text-4xl" x-text="String({{ $key }}).padStart(2, '0')">--</div>
-                                <div class="mt-1 text-[11px] font-medium uppercase tracking-widest text-slate-400">{{ $labelText }}</div>
+                                <div class="mt-1 text-[11px] font-medium uppercase tracking-widest text-slate-600">{{ $labelText }}</div>
                             </div>
                         @endforeach
                     </div>
@@ -62,7 +62,7 @@
         <section class="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
             <div class="flex items-end justify-between gap-4">
                 <div>
-                    <p class="eyebrow text-primary-600">Kategori</p>
+                    <p class="eyebrow text-primary-700">Kategori</p>
                     <h2 class="mt-2 font-display text-2xl font-bold uppercase tracking-tight text-slate-900 sm:text-3xl">Kategori Perlombaan</h2>
                 </div>
                 <p class="hidden max-w-xs text-right text-sm text-slate-500 sm:block">Setiap peserta mendapatkan jersey finisher, medali, dan e-certificate.</p>
@@ -95,7 +95,7 @@
                                 Daftar
                             </a>
                         @else
-                            <span class="col-start-2 row-start-2 w-fit cursor-not-allowed border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-400 sm:col-start-auto sm:row-start-auto">
+                            <span class="col-start-2 row-start-2 w-fit cursor-not-allowed border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 sm:col-start-auto sm:row-start-auto">
                                 Penuh
                             </span>
                         @endif
@@ -112,7 +112,7 @@
         <section class="border-t border-slate-200 bg-slate-50">
             <div class="mx-auto grid max-w-6xl gap-12 px-4 py-14 sm:px-6 lg:grid-cols-2 lg:px-8">
                 <div>
-                    <p class="eyebrow text-primary-600">Alur</p>
+                    <p class="eyebrow text-primary-700">Alur</p>
                     <h2 class="mt-2 font-display text-2xl font-bold uppercase tracking-tight text-slate-900">Tata Cara Pendaftaran</h2>
                     <ol class="mt-7 space-y-6">
                         @foreach ([
@@ -122,7 +122,7 @@
                             'Terima nomor peserta (BIB)' => 'Setelah pembayaran disetujui, BIB Number dikirim ke email Anda.',
                         ] as $step => $desc)
                             <li class="flex items-baseline gap-4 border-b border-slate-200 pb-5 last:border-b-0 last:pb-0">
-                                <span class="font-display text-xl font-bold tabular-nums text-primary-600">{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
+                                <span class="font-display text-xl font-bold tabular-nums text-primary-700">{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
                                 <div>
                                     <p class="font-semibold text-slate-900">{{ $step }}</p>
                                     <p class="mt-0.5 text-sm leading-relaxed text-slate-500">{{ $desc }}</p>
@@ -133,7 +133,7 @@
                 </div>
 
                 <div>
-                    <p class="eyebrow text-primary-600">Pembayaran</p>
+                    <p class="eyebrow text-primary-700">Pembayaran</p>
                     <h2 class="mt-2 font-display text-2xl font-bold uppercase tracking-tight text-slate-900">Informasi Pembayaran</h2>
                     <dl class="mt-7 divide-y divide-slate-200 border-y border-slate-200 text-sm">
                         <div class="flex flex-col gap-1 py-4 sm:flex-row sm:justify-between">
@@ -157,13 +157,13 @@
                             <dd class="text-slate-500 sm:text-right">Diterbitkan setelah pembayaran terverifikasi &amp; dikirim via email</dd>
                         </div>
                     </dl>
-                    <p class="mt-4 text-xs text-slate-400">Nominal pembayaran harus sama persis dengan harga kategori yang dipilih.</p>
+                    <p class="mt-4 text-xs text-slate-600">Nominal pembayaran harus sama persis dengan harga kategori yang dipilih.</p>
                 </div>
             </div>
         </section>
     @else
         <section class="mx-auto max-w-6xl px-4 py-24 sm:px-6 lg:px-8">
-            <p class="eyebrow text-slate-400">Info</p>
+            <p class="eyebrow text-slate-600">Info</p>
             <h1 class="mt-2 font-display text-3xl font-extrabold uppercase tracking-tight text-slate-900 sm:text-4xl">Belum Ada Event Aktif</h1>
             <p class="mt-4 max-w-md text-slate-500">Saat ini belum ada event lari yang tersedia. Silakan kembali lagi nanti untuk informasi event terbaru.</p>
         </section>

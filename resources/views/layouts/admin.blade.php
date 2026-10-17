@@ -6,11 +6,9 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>@yield('title', 'Dashboard Admin') — KATAR FUN RUN REG</title>
+    <meta name="description" content="Panel administrasi pendaftaran event lari — kelola peserta, verifikasi pembayaran, dan terbitkan BIB.">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-
+    {{-- Font di-host sendiri lewat app.css: tidak ada request render-blocking ke Google Fonts. --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="min-h-screen bg-slate-50 font-sans text-slate-800 antialiased">
@@ -23,8 +21,8 @@
     <aside class="fixed inset-y-0 left-0 z-40 w-60 -translate-x-full border-r border-slate-200 bg-white transition-transform duration-200 lg:translate-x-0"
         :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
         <div class="flex h-16 items-center gap-3 border-b border-slate-200 px-5">
-            <img src="{{ asset('images/Logo.png') }}" alt="Logo KATAR FUN RUN REG" class="h-10 w-auto max-w-[44px] shrink-0 object-contain">
-            <span class="font-display text-base font-bold uppercase tracking-tight text-slate-900">RunEvent<span class="text-primary-600">Reg</span></span>
+            <img src="{{ asset('images/logo-160.png') }}" alt="Logo KATAR FUN RUN REG" width="32" height="40" class="h-8 w-auto shrink-0 object-contain">
+            <span class="font-display text-base font-bold uppercase tracking-tight text-slate-900">RunEvent<span class="text-primary-700">Reg</span></span>
         </div>
 
         <nav class="space-y-0.5 px-3 py-4">
@@ -39,7 +37,7 @@
                     class="-ml-3 flex items-center border-l-2 px-4 py-2 text-sm font-medium transition-colors {{ request()->routeIs($item['route']) ? 'border-primary-600 text-slate-900' : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-900' }}">
                     {{ $item['label'] }}
                     @if (request()->routeIs($item['route']))
-                        <span class="ml-auto h-1.5 w-1.5 rounded-full bg-primary-600"></span>
+                        <span class="ml-auto h-1.5 w-1.5 rounded-full bg-primary-700"></span>
                     @endif
                 </a>
             @endforeach
@@ -65,12 +63,12 @@
                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
             </button>
 
-            <div class="hidden eyebrow text-slate-400 lg:block">@yield('page-title', 'Dashboard')</div>
+            <div class="hidden eyebrow text-slate-600 lg:block">@yield('page-title', 'Dashboard')</div>
 
             <div class="flex items-center gap-3">
                 <div class="hidden text-right">
                     <p class="text-sm font-semibold leading-tight text-slate-800">{{ auth()->user()?->name }}</p>
-                    <p class="text-xs leading-tight text-slate-400">Administrator</p>
+                    <p class="text-xs leading-tight text-slate-600">Administrator</p>
                 </div>
                 <span class="flex h-9 w-9 items-center justify-center border border-slate-300 bg-white font-display text-sm font-bold uppercase text-slate-700">
                     {{ strtoupper(substr(auth()->user()?->name ?? 'A', 0, 1)) }}

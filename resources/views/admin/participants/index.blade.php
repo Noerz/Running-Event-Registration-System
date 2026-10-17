@@ -15,14 +15,14 @@
     <form method="GET" action="{{ route('admin.participants.index') }}" class="mt-6 border border-slate-200 bg-white p-4 sm:p-5">
         <div class="grid gap-3 sm:grid-cols-[1fr_auto_auto_auto]">
             <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama / email / no. HP / kode registrasi..."
-                class="field-control">
-            <select name="category" class="field-control">
+                aria-label="Cari peserta" class="field-control">
+            <select name="category" aria-label="Filter kategori lomba" class="field-control">
                 <option value="">Semua Kategori</option>
                 @foreach ($filterCategories as $category)
                     <option value="{{ $category->id }}" @selected(request('category') == $category->id)>{{ $category->name }} ({{ $category->code }})</option>
                 @endforeach
             </select>
-            <select name="status" class="field-control">
+            <select name="status" aria-label="Filter status pendaftaran" class="field-control">
                 <option value="">Semua Status</option>
                 @foreach (\App\Enums\RegistrationStatus::cases() as $status)
                     <option value="{{ $status->value }}" @selected(request('status') === $status->value)>{{ $status->label() }}</option>
@@ -107,7 +107,7 @@
                         <tr>
                             <td colspan="9" class="px-6 py-16 text-center">
                                 <p class="font-semibold text-slate-600">Tidak ada peserta ditemukan</p>
-                                <p class="mt-1 text-sm text-slate-400">Coba ubah kata kunci pencarian atau filter.</p>
+                                <p class="mt-1 text-sm text-slate-600">Coba ubah kata kunci pencarian atau filter.</p>
                             </td>
                         </tr>
                     @endforelse

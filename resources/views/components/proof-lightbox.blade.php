@@ -12,7 +12,7 @@
         <div class="relative z-10 flex items-center justify-between gap-3 border-b border-white/10 bg-slate-950/80 px-4 py-3 backdrop-blur sm:px-6">
             <div class="min-w-0">
                 <p class="truncate text-sm font-bold text-white sm:text-base" x-text="title"></p>
-                <p class="mt-0.5 text-xs text-slate-400">Klik bukti untuk memperbesar</p>
+                <p class="mt-0.5 text-xs text-slate-600">Klik bukti untuk memperbesar</p>
             </div>
             <div class="flex shrink-0 items-center gap-2">
                 <button type="button" @click="zoom = !zoom"
