@@ -8,14 +8,18 @@ use App\Mail\RegistrationConfirmedMail;
 use App\Models\ActivityLog;
 use App\Models\Participant;
 use App\Models\User;
+use App\Services\PaymentProof\PaymentProofService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Storage;
 use Throwable;
 
 class PaymentService
 {
+    public function __construct(
+        protected PaymentProofService $proofs
+    ) {}
+
     /**
      * Memverifikasi (approve) pembayaran peserta secara idempotent:
      * - mengunci baris participant untuk mencegah race condition;
@@ -165,43 +169,57 @@ class PaymentService
      */
     public function resubmitProof(Participant $participant, $proofFile, User $admin): bool
     {
-        $resubmitted = DB::transaction(function () use ($participant, $proofFile) {
-            /** @var Participant $locked */
-            $locked = Participant::query()
-                ->whereKey($participant->getKey())
-                ->lockForUpdate()
-                ->firstOrFail();
+        // Unggah file baru lebih dulu agar file lama tidak hilang bila unggah gagal.
+        $uploaded = $this->proofs->uploadFile($proofFile, $participant->full_name, $participant->phone);
 
-            $payment = $locked->payment()->lockForUpdate()->firstOrFail();
+        try {
+            $resubmitted = DB::transaction(function () use ($participant, $uploaded) {
+                /** @var Participant $locked */
+                $locked = Participant::query()
+                    ->whereKey($participant->getKey())
+                    ->lockForUpdate()
+                    ->firstOrFail();
 
-            if ($payment->payment_status !== PaymentStatus::Rejected) {
-                return false;
-            }
+                $payment = $locked->payment()->lockForUpdate()->firstOrFail();
 
-            // Simpan dulu yang baru, hapus yang lama setelah sukses.
-            $newPath = $proofFile->store('payment-proofs', config('registration.payment_proof_disk'));
+                if ($payment->payment_status !== PaymentStatus::Rejected) {
+                    return false;
+                }
 
-            if ($payment->payment_proof) {
-                Storage::disk(config('registration.payment_proof_disk'))->delete($payment->payment_proof);
-            }
+                $oldPath = $payment->payment_proof;
 
-            $payment->update([
-                'payment_proof' => $newPath,
-                'payment_status' => PaymentStatus::Pending,
-                'rejection_reason' => null,
-                'verified_by' => null,
-                'verified_at' => null,
-            ]);
+                $payment->update([
+                    'payment_proof' => $uploaded['path'],
+                    'payment_status' => PaymentStatus::Pending,
+                    'rejection_reason' => null,
+                    'verified_by' => null,
+                    'verified_at' => null,
+                ]);
 
-            $locked->forceFill([
-                'registration_status' => RegistrationStatus::Pending,
-            ])->save();
+                $this->proofs->recordMetadata($payment, $uploaded);
 
-            return true;
-        });
+                $locked->forceFill([
+                    'registration_status' => RegistrationStatus::Pending,
+                ])->save();
 
-        if (! $resubmitted) {
+                return $oldPath;
+            });
+        } catch (Throwable $e) {
+            $this->proofs->deleteObject($uploaded['path']);
+
+            throw $e;
+        }
+
+        if ($resubmitted === false || $resubmitted === null) {
+            // Status bukan rejected: file baru tidak dipakai, bersihkan.
+            $this->proofs->deleteObject($uploaded['path']);
+
             return false;
+        }
+
+        // Hapus bukti lama setelah penggantian tercatat sukses.
+        if (is_string($resubmitted)) {
+            $this->proofs->deleteObject($resubmitted);
         }
 
         ActivityLog::record(

@@ -49,7 +49,7 @@
 
             <div class="mt-6 grid gap-5 sm:grid-cols-2">
                 <div x-data="fieldValidator('required')">
-                    @php $selectedCategory = collect($categories)->firstWhere('id', old('race_category_id')); @endphp
+                    @php $selectedCategory = collect($categories)->firstWhere('id', old('race_category_id', $selectedCategoryId ?? null)); @endphp
                     <label for="race_category_id" class="mb-1.5 block text-sm font-medium text-slate-700">Kategori Lomba <span class="text-red-500">*</span></label>
                     <select id="race_category_id" name="race_category_id" required
                         class="field-control {{ $errors->has('race_category_id') ? 'field-control-invalid' : '' }}"
@@ -59,7 +59,7 @@
                         @foreach ($categories as $category)
                             <option value="{{ $category->id }}" data-price="{{ $category->price }}"
                                 @disabled($category->remainingQuota() < 1)
-                                @selected(old('race_category_id') == $category->id)>
+                                @selected(old('race_category_id', $selectedCategoryId ?? null) == $category->id)>
                                 {{ $category->name }} ({{ $category->formattedDistance() }}) — {{ $category->formattedPrice() }}{{ $category->remainingQuota() < 1 ? ' — PENUH' : '' }}
                             </option>
                         @endforeach

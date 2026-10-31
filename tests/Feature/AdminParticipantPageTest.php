@@ -63,6 +63,23 @@ class AdminParticipantPageTest extends TestCase
         Storage::disk('public')->assertMissing('payment-proofs/proof.png');
     }
 
+    public function test_missing_payment_proof_returns_404_instead_of_error(): void
+    {
+        $admin = $this->createAdmin();
+        $event = $this->createOpenEvent();
+        $category = $event->raceCategories->firstWhere('code', '5K');
+        $participant = $this->createPendingParticipant($event, $category);
+        $participant->payment()->firstOrFail()->update(['payment_proof' => 'payment-proofs/hilang.png']);
+
+        $this->actingAs($admin)
+            ->get(route('admin.participants.payment-proof', $participant))
+            ->assertNotFound();
+
+        $this->actingAs($admin)
+            ->get(route('admin.participants.payment-proof', $participant).'?inline=1')
+            ->assertNotFound();
+    }
+
     public function test_participant_list_supports_search_and_filter(): void
     {
         $admin = $this->createAdmin();

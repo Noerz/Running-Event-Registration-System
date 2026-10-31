@@ -8,46 +8,71 @@ use App\Models\ActivityLog;
 use App\Models\Event;
 use App\Models\Participant;
 use App\Models\RaceCategory;
+use App\Services\PaymentProof\PaymentProofService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
+use Throwable;
 
 class RegistrationService
 {
+    public function __construct(
+        protected PaymentProofService $proofs
+    ) {}
+
     /**
      * Menyimpan pendaftaran peserta beserta data pembayaran dalam satu transaksi.
      */
     public function register(array $data): Participant
     {
-        /** @var Participant $participant */
-        $participant = DB::transaction(function () use ($data) {
-            // Lock kategori membuat cek kuota dan insert peserta serial per kategori.
-            [$event, $category] = $this->resolveOpenCategory($data['race_category_id'], lock: true);
+        // File diunggah lebih dulu di luar transaksi DB; bila transaksi gagal,
+        // objek yang sudah terunggah dibersihkan agar tidak menjadi orphan.
+        $uploaded = $this->proofs->uploadFile(
+            $data['payment_proof'],
+            $data['full_name'] ?? null,
+            $data['phone'] ?? null
+        );
 
-            if ($category->remainingQuota() < 1) {
-                throw new RuntimeException('Kuota kategori '.$category->name.' sudah penuh.');
-            }
+        try {
+            /** @var Participant $participant */
+            $participant = DB::transaction(function () use ($data, $uploaded) {
+                // Lock kategori membuat cek kuota dan insert peserta serial per kategori.
+                [$event, $category] = $this->resolveOpenCategory($data['race_category_id'], lock: true);
 
-            if ($this->alreadyRegistered($event, $data['email'])) {
-                throw new RuntimeException('Email '.$data['email'].' sudah terdaftar pada event ini.');
-            }
+                if ($category->remainingQuota() < 1) {
+                    throw new RuntimeException('Kuota kategori '.$category->name.' sudah penuh.');
+                }
 
-            $participant = Participant::create([
-                ...$this->participantAttributes($data),
-                'event_id' => $event->getKey(),
-                'race_category_id' => $category->getKey(),
-            ]);
+                if ($this->alreadyRegistered($event, $data['email'])) {
+                    throw new RuntimeException('Email '.$data['email'].' sudah terdaftar pada event ini.');
+                }
 
-            // Format REG-{tahun}-{id}: unik dan bebas race condition karena
-            // diturunkan dari primary key auto increment.
-            $participant->forceFill([
-                'registration_code' => sprintf('REG-%d-%05d', now()->year, $participant->getKey()),
-            ])->save();
+                $participant = Participant::create([
+                    ...$this->participantAttributes($data),
+                    'event_id' => $event->getKey(),
+                    'race_category_id' => $category->getKey(),
+                ]);
 
-            $participant->payment()->create($this->paymentAttributes($data));
+                // Format REG-{tahun}-{id}: unik dan bebas race condition karena
+                // diturunkan dari primary key auto increment.
+                $participant->forceFill([
+                    'registration_code' => sprintf('REG-%d-%05d', now()->year, $participant->getKey()),
+                ])->save();
 
-            return $participant;
-        });
+                $payment = $participant->payment()->create([
+                    ...$this->paymentAttributes($data),
+                    'payment_proof' => $uploaded['path'],
+                ]);
+
+                $this->proofs->recordMetadata($payment, $uploaded);
+
+                return $participant;
+            });
+        } catch (Throwable $e) {
+            $this->proofs->deleteObject($uploaded['path']);
+
+            throw $e;
+        }
 
         $participant->load('raceCategory');
 
@@ -122,7 +147,6 @@ class RegistrationService
         return [
             'payment_method' => $data['payment_method'],
             'amount' => $data['amount'],
-            'payment_proof' => $data['payment_proof']->store('payment-proofs', config('registration.payment_proof_disk')),
             'payment_status' => PaymentStatus::Pending,
         ];
     }

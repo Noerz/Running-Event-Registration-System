@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Enums\PaymentStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Payment extends Model
 {
@@ -18,7 +20,6 @@ class Payment extends Model
         'verified_by',
         'verified_at',
     ];
-
     protected function casts(): array
     {
         return [
@@ -26,14 +27,20 @@ class Payment extends Model
             'verified_at' => 'datetime',
         ];
     }
-
     public function participant(): BelongsTo
     {
         return $this->belongsTo(Participant::class);
     }
-
     public function verifiedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'verified_by');
+    }
+    public function proof(): HasOne
+    {
+        return $this->hasOne(PaymentProof::class)->latestOfMany();
+    }
+    public function proofs(): HasMany
+    {
+        return $this->hasMany(PaymentProof::class);
     }
 }

@@ -186,4 +186,18 @@ class RegistrationTest extends TestCase
         $this->post(route('register.store'), $payload)
             ->assertSessionHasErrors('race_category_id');
     }
+
+    public function test_register_page_preselects_category_from_query_string(): void
+    {
+        $event = $this->createOpenEvent();
+        $category = $event->raceCategories->firstWhere('code', '10K');
+
+        $this->get(route('register.create', ['category' => $category->getKey()]))
+            ->assertOk()
+            ->assertSee('value="'.$category->getKey().'"', false)
+            ->assertSee('selected', false);
+
+        // Kode kategori juga diterima (mis. 5K).
+        $this->get(route('register.create', ['category' => '5K']))->assertOk();
+    }
 }

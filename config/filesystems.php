@@ -60,6 +60,17 @@ return [
             'report' => false,
         ],
 
+        'object_storage' => [
+            'driver' => 'filegator',
+            'base_url' => env('OBJECT_STORAGE_BASE_URL', 'https://dev.kantorku.my.id/cdn/api/v1'),
+            'token' => env('OBJECT_STORAGE_TOKEN'),
+            'username' => env('OBJECT_STORAGE_USERNAME'),
+            'password' => env('OBJECT_STORAGE_PASSWORD'),
+            'folder' => env('OBJECT_STORAGE_FOLDER', ''),
+            'timeout' => (int) env('OBJECT_STORAGE_TIMEOUT', 30),
+            'retry' => (int) env('OBJECT_STORAGE_RETRY', 2),
+            'throw' => true,
+        ],
     ],
 
     /*

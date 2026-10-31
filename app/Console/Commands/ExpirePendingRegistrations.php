@@ -4,9 +4,9 @@ namespace App\Console\Commands;
 
 use App\Models\ActivityLog;
 use App\Models\Participant;
+use App\Services\PaymentProof\PaymentProofService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Storage;
 
 class ExpirePendingRegistrations extends Command
 {
@@ -14,7 +14,7 @@ class ExpirePendingRegistrations extends Command
 
     protected $description = 'Membatalkan pendaftaran pending yang melewati batas waktu verifikasi';
 
-    public function handle(): int
+    public function handle(PaymentProofService $proofs): int
     {
         $cutoff = Carbon::now()->subDays((int) config('registration.pending_expiry_days', 7));
 
@@ -27,8 +27,7 @@ class ExpirePendingRegistrations extends Command
         foreach ($expired as $participant) {
             // Hapus bukti pembayaran untuk mengosongkan storage privat.
             if ($participant->payment?->payment_proof) {
-                Storage::disk(config('registration.payment_proof_disk'))
-                    ->delete($participant->payment->payment_proof);
+                $proofs->deleteObject($participant->payment->payment_proof);
             }
 
             $participant->payment?->update([

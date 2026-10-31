@@ -7,6 +7,7 @@ use App\Models\Event;
 use App\Services\RegistrationService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 use RuntimeException;
 
@@ -16,7 +17,7 @@ class RegistrationController extends Controller
     {
     }
 
-    public function create(): View|RedirectResponse
+    public function create(Request $request): View|RedirectResponse
     {
         $event = Event::query()->openForRegistration()->first();
 
@@ -28,9 +29,14 @@ class RegistrationController extends Controller
 
         $categories = $event->activeRaceCategories()->orderBy('distance')->get();
 
+        $categoryParam = $request->query('category', $request->query('category_id', $request->query('race_category_id')));
+        $selectedCategory = $categories->first(fn ($c) => (string) $c->id === (string) $categoryParam || strcasecmp($c->code, (string) $categoryParam) === 0);
+        $selectedCategoryId = $selectedCategory && $selectedCategory->remainingQuota() > 0 ? $selectedCategory->id : null;
+
         return view('register.create', [
             'event' => $event,
             'categories' => $categories,
+            'selectedCategoryId' => $selectedCategoryId,
         ]);
     }
 

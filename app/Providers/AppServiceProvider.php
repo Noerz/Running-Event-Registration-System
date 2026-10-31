@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Models\User;
+use App\Services\ObjectStorage\FileGatorAdapter;
+use App\Services\ObjectStorage\FileGatorService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Mail\Events\MessageSendingFailed;
@@ -12,13 +14,42 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
+use League\Flysystem\Filesystem;
 
 class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //
+        $this->app->singleton(FileGatorService::class, function ($app) {
+            return new FileGatorService([
+                'base_url' => config('object_storage.base_url'),
+                'token' => config('object_storage.token'),
+                'username' => config('object_storage.username'),
+                'password' => config('object_storage.password'),
+                'folder' => config('object_storage.folder'),
+                'timeout' => config('object_storage.timeout'),
+                'retry' => config('object_storage.retry'),
+            ]);
+        });
+
+        $this->app->bind(
+            \App\Services\ObjectStorage\Contracts\ObjectStorageInterface::class,
+            FileGatorService::class
+        );
+
+        Storage::extend('filegator', function ($app, array $config) {
+            $service = $app->make(FileGatorService::class);
+
+            $adapter = new FileGatorAdapter($service, (string) ($config['folder'] ?? ''));
+
+            return new \Illuminate\Filesystem\FilesystemAdapter(
+                new Filesystem($adapter, $config),
+                $adapter,
+                $config
+            );
+        });
     }
 
     public function boot(): void

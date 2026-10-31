@@ -134,9 +134,17 @@
                         <dt class="text-xs font-medium uppercase tracking-wide text-slate-600">Bukti Pembayaran</dt>
                         <dd class="mt-2 overflow-hidden rounded-sm border border-slate-200 bg-slate-50 p-3 text-center">
                             @php($proofPath = $participant->payment->payment_proof)
-                            @php($proofExists = $proofPath && \Storage::disk(config('registration.payment_proof_disk'))->exists($proofPath))
+                            @php($proofExists = app(\App\Services\PaymentProof\PaymentProofService::class)->exists($proofPath))
 
                             @if ($proofExists)
+                                @if ($metadata = $participant->payment->proof)
+                                    <div class="mb-3 rounded border border-slate-200 bg-white p-2 text-left text-xs text-slate-500 space-y-0.5">
+                                        <div><span class="font-medium text-slate-700">File:</span> {{ $metadata->file_name }}</div>
+                                        <div><span class="font-medium text-slate-700">Tipe / Ukuran:</span> {{ $metadata->mime_type }} ({{ $metadata->humanSize() }})</div>
+                                        <div><span class="font-medium text-slate-700">Storage:</span> <span class="rounded bg-slate-100 px-1 py-0.5 font-mono text-[11px] text-slate-700">{{ $metadata->storage_disk }}</span></div>
+                                    </div>
+                                @endif
+
                                 <button type="button"
                                     data-proof="{{ route('admin.participants.payment-proof', $participant).'?inline=1' }}"
                                     data-title="Bukti Pembayaran — {{ $participant->registration_code }}"

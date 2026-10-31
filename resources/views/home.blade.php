@@ -71,12 +71,27 @@
             <div class="mt-8">
                 @forelse ($categories as $category)
                     <article class="grid grid-cols-[auto_1fr_auto] items-center gap-x-4 gap-y-2 border-t border-slate-200 py-5 transition-colors last:border-b hover:bg-slate-50 sm:grid-cols-[auto_1fr_auto_auto_auto] sm:gap-x-6 sm:px-4 {{ $loop->last ? 'border-b' : '' }}">
-                        <span class="inline-flex min-w-[52px] justify-center border border-slate-900 px-2 py-1 font-display text-sm font-bold uppercase tracking-wide text-slate-900">
-                            {{ $category->code }}
-                        </span>
+                        @if ($category->remainingQuota() > 0)
+                            <a href="{{ route('register.create', ['category' => $category->getKey()]) }}"
+                                class="inline-flex min-w-[52px] justify-center border border-slate-900 px-2 py-1 font-display text-sm font-bold uppercase tracking-wide text-slate-900 transition-colors hover:bg-slate-900 hover:text-white">
+                                {{ $category->code }}
+                            </a>
+                        @else
+                            <span class="inline-flex min-w-[52px] justify-center border border-slate-900 px-2 py-1 font-display text-sm font-bold uppercase tracking-wide text-slate-900">
+                                {{ $category->code }}
+                            </span>
+                        @endif
 
                         <div class="min-w-0">
-                            <h3 class="truncate font-display text-base font-bold text-slate-900 sm:text-lg">{{ $category->name }}</h3>
+                            <h3 class="truncate font-display text-base font-bold text-slate-900 sm:text-lg">
+                                @if ($category->remainingQuota() > 0)
+                                    <a href="{{ route('register.create', ['category' => $category->getKey()]) }}" class="hover:underline">
+                                        {{ $category->name }}
+                                    </a>
+                                @else
+                                    {{ $category->name }}
+                                @endif
+                            </h3>
                             <p class="mt-0.5 text-sm text-slate-500">
                                 {{ number_format($category->distance, $category->distance == floor($category->distance) ? 0 : 2, ',', '.') }} km
                                 · Sisa kuota {{ $category->remainingQuota() }}/{{ $category->quota }}
@@ -90,7 +105,7 @@
                         <span class="sr-only">Biaya pendaftaran kategori {{ $category->name }}</span>
 
                         @if ($category->remainingQuota() > 0)
-                            <a href="{{ route('register.create') }}"
+                            <a href="{{ route('register.create', ['category' => $category->getKey()]) }}"
                                 class="col-start-2 row-start-2 w-fit border border-slate-900 px-4 py-2 text-sm font-semibold text-slate-900 transition-colors hover:bg-slate-900 hover:text-white sm:col-start-auto sm:row-start-auto">
                                 Daftar
                             </a>

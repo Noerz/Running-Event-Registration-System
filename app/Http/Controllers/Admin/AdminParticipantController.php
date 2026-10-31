@@ -7,6 +7,8 @@ use App\Http\Requests\UpdateParticipantRequest;
 use App\Models\ActivityLog;
 use App\Models\Participant;
 use App\Models\RaceCategory;
+use App\Services\ObjectStorage\Exceptions\FileNotFoundException;
+use App\Services\PaymentProof\PaymentProofService;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -84,16 +86,18 @@ class AdminParticipantController extends Controller
     /**
      * Menampilkan/mengunduh bukti pembayaran dari storage privat (bukan public).
      */
-    public function paymentProof(Request $request, Participant $participant): StreamedResponse
+    public function paymentProof(Request $request, Participant $participant, PaymentProofService $proofs): StreamedResponse
     {
         abort_unless($participant->payment?->payment_proof, 404);
 
-        $storage = \Storage::disk(config('registration.payment_proof_disk'));
+        $path = $participant->payment->payment_proof;
 
-        if ($request->boolean('inline')) {
-            return $storage->response($participant->payment->payment_proof);
+        try {
+            return $request->boolean('inline')
+                ? $proofs->response($path)
+                : $proofs->download($path);
+        } catch (FileNotFoundException) {
+            abort(404, 'File bukti pembayaran tidak ditemukan pada storage.');
         }
-
-        return $storage->download($participant->payment->payment_proof);
     }
 }
