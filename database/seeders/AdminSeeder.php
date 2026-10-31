@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -19,7 +20,7 @@ class AdminSeeder extends Seeder
             return;
         }
 
-        User::query()->updateOrCreate(
+        $admin = User::query()->updateOrCreate(
             ['email' => 'admin@example.com'],
             [
                 'name' => 'Administrator',
@@ -27,5 +28,11 @@ class AdminSeeder extends Seeder
                 'is_admin' => true,
             ]
         );
+
+        $superAdminId = Role::query()->where('code', Role::SUPER_ADMIN)->value('id');
+
+        if ($superAdminId) {
+            $admin->roles()->syncWithoutDetaching([$superAdminId]);
+        }
     }
 }

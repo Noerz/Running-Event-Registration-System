@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Concerns\InteractsWithRegistration;
@@ -31,6 +32,7 @@ class AdminUserManagementTest extends TestCase
                 'email' => 'new-admin@example.com',
                 'password' => 'password123',
                 'password_confirmation' => 'password123',
+                'role_id' => Role::query()->where('code', Role::ADMIN)->value('id'),
             ])
             ->assertRedirect(route('admin.users.index'));
 
@@ -44,12 +46,13 @@ class AdminUserManagementTest extends TestCase
     public function test_admin_can_update_admin_details(): void
     {
         $admin = $this->createAdmin();
-        $other = User::factory()->create(['is_admin' => true]);
+        $other = $this->createAdminWithRole(Role::VIEWER);
 
         $this->actingAs($admin)
             ->put(route('admin.users.update', $other), [
                 'name' => 'Nama Baru',
                 'email' => $other->email,
+                'role_id' => Role::query()->where('code', Role::VIEWER)->value('id'),
             ])
             ->assertRedirect(route('admin.users.index'));
 

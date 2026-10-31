@@ -6,6 +6,7 @@ use App\Enums\EventStatus;
 use App\Models\Event;
 use App\Models\Participant;
 use App\Models\RaceCategory;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 
@@ -13,12 +14,29 @@ trait InteractsWithRegistration
 {
     protected function createAdmin(): User
     {
-        return User::factory()->create([
+        return $this->createAdminWithRole(Role::SUPER_ADMIN);
+    }
+
+    /**
+     * Buat admin dengan role tertentu.
+     */
+    protected function createAdminWithRole(string $roleCode, array $attributes = []): User
+    {
+        $admin = User::factory()->create([
             'name' => 'Panitia Test',
-            'email' => 'admin@test.com',
+            'email' => 'admin-'.uniqid().'@test.com',
             'password' => 'password',
             'is_admin' => true,
+            ...$attributes,
         ]);
+
+        $roleId = Role::query()->where('code', $roleCode)->value('id');
+
+        if ($roleId) {
+            $admin->roles()->sync([$roleId]);
+        }
+
+        return $admin;
     }
 
     protected function createOpenEvent(array $categories = []): Event

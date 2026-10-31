@@ -48,7 +48,7 @@
                             <dl class="grid grid-cols-1 gap-x-8 gap-y-4 px-6 py-5 sm:grid-cols-2">
                                 <div>
                                     <dt class="text-xs font-medium uppercase tracking-wide text-slate-600">Nama Peserta</dt>
-                                    <dd class="mt-1 font-semibold text-slate-800">{{ $participant->full_name }}</dd>
+                                    <dd class="mt-1 font-semibold text-slate-800">{{ $participant->maskedName() }}</dd>
                                 </div>
                                 <div>
                                     <dt class="text-xs font-medium uppercase tracking-wide text-slate-600">Kategori Lomba</dt>

@@ -9,9 +9,11 @@
             <h1 class="font-display text-2xl font-extrabold uppercase tracking-tight text-slate-900">Manajemen Admin</h1>
             <p class="mt-1 text-sm text-slate-500">Kelola akun admin yang bisa mengakses panel.</p>
         </div>
-        <a href="{{ route('admin.users.create') }}" class="btn-primary">
-            + Tambah Admin
-        </a>
+        @can('users.create')
+            <a href="{{ route('admin.users.create') }}" class="btn-primary">
+                + Tambah Admin
+            </a>
+        @endcan
     </div>
 
     <div class="mt-6 overflow-hidden border border-slate-200 bg-white">
@@ -21,6 +23,7 @@
                     <tr>
                         <th class="px-5 py-3.5">Nama</th>
                         <th class="px-5 py-3.5">Email</th>
+                        <th class="px-5 py-3.5">Role</th>
                         <th class="px-5 py-3.5 hidden md:table-cell">Dibuat</th>
                         <th class="px-5 py-3.5 text-right">Action</th>
                     </tr>
@@ -35,20 +38,31 @@
                                 @endif
                             </td>
                             <td class="px-5 py-3.5">{{ $admin->email }}</td>
+                            <td class="px-5 py-3.5">
+                                @forelse ($admin->activeRoles() as $role)
+                                    <span class="inline-flex items-center gap-1 rounded-sm px-2 py-1 text-xs font-semibold {{ $role->is_system ? 'bg-primary-50 text-primary-700' : 'bg-slate-100 text-slate-700' }}">{{ $role->name }}</span>
+                                @empty
+                                    <span class="text-xs font-medium text-red-600">Tanpa role</span>
+                                @endforelse
+                            </td>
                             <td class="whitespace-nowrap px-5 py-3.5 hidden md:table-cell">{{ $admin->created_at?->translatedFormat('d M Y H:i') }}</td>
                             <td class="whitespace-nowrap px-5 py-3.5 text-right">
-                                <a href="{{ route('admin.users.edit', $admin) }}" class="inline-flex items-center gap-1 rounded-sm bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-200">Edit</a>
-                                @unless ($admin->is(auth()->user()))
-                                    <form action="{{ route('admin.users.destroy', $admin) }}" method="POST" class="inline" onsubmit="return confirm('Hapus admin ini?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="ml-1 inline-flex items-center gap-1 rounded-sm bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100">Hapus</button>
-                                    </form>
-                                @endunless
+                                @can('users.update')
+                                    <a href="{{ route('admin.users.edit', $admin) }}" class="inline-flex items-center gap-1 rounded-sm bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-200">Edit</a>
+                                @endcan
+                                @can('users.delete')
+                                    @unless ($admin->is(auth()->user()))
+                                        <form action="{{ route('admin.users.destroy', $admin) }}" method="POST" class="inline" onsubmit="return confirm('Hapus admin ini?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="ml-1 inline-flex items-center gap-1 rounded-sm bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100">Hapus</button>
+                                        </form>
+                                    @endunless
+                                @endcan
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="4" class="px-6 py-16 text-center text-sm text-slate-500">Belum ada admin.</td></tr>
+                        <tr><td colspan="5" class="px-6 py-16 text-center text-sm text-slate-500">Belum ada admin.</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -58,5 +72,3 @@
         @endif
     </div>
 @endsection
-
-

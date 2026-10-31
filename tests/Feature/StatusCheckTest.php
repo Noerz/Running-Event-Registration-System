@@ -3,8 +3,6 @@
 namespace Tests\Feature;
 
 use App\Enums\RegistrationStatus;
-use App\Models\Event;
-use App\Models\Participant;
 use App\Services\PaymentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Concerns\InteractsWithRegistration;
@@ -12,7 +10,7 @@ use Tests\TestCase;
 
 class StatusCheckTest extends TestCase
 {
-    use RefreshDatabase, InteractsWithRegistration;
+    use InteractsWithRegistration, RefreshDatabase;
 
     public function test_user_can_check_status_by_email(): void
     {
@@ -27,7 +25,8 @@ class StatusCheckTest extends TestCase
         $this->post(route('check.check'), ['identifier' => 'cari@example.com'])
             ->assertOk()
             ->assertSee($participant->registration_code)
-            ->assertSee('Andi Pencari')
+            ->assertSee('Andi P.')
+            ->assertDontSee('Andi Pencari')
             ->assertSee('Menunggu Verifikasi Pembayaran')
             ->assertDontSee('Jl. Merdeka No. 10');
     }
@@ -59,7 +58,7 @@ class StatusCheckTest extends TestCase
         $this->post(route('check.check'), ['identifier' => '0812-3450-0002'])
             ->assertOk()
             ->assertSee($participant->registration_code)
-            ->assertSee('Bella Telepon');
+            ->assertSee('Bella T.');
     }
 
     public function test_check_page_shows_bib_and_rejection_reason(): void

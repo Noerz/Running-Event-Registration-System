@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Mail\Events\MessageSendingFailed;
@@ -25,11 +26,31 @@ class AppServiceProvider extends ServiceProvider
         Schema::defaultStringLength(191);
 
         // Rate limiting untuk halaman pengecekan status pendaftaran.
+        // Dibatasi per IP dan per identifier agar email/nomor HP tidak bisa
+        // ditebak berulang (enumeration).
         RateLimiter::for('status-check', function (Request $request) {
-            return Limit::perMinute(10)->by('status-check:'.$request->ip());
+            $identifier = mb_strtolower(trim((string) $request->input('identifier')));
+
+            return [
+                Limit::perMinute(10)->by('status-check:'.$request->ip()),
+                Limit::perMinute(5)->by('status-check-id:'.$request->ip().'|'.$identifier),
+            ];
         });
 
-        Gate::define('access-admin', fn (\App\Models\User $user): bool => (bool) $user->is_admin);
+        Gate::define('access-admin', fn (User $user): bool => (bool) $user->is_admin);
+
+        // RBAC: Super admin bypass semua permission. Permission lain dicek via User::hasPermission.
+        Gate::before(function (User $user, string $ability) {
+            if ($user->isSuperAdmin()) {
+                return true;
+            }
+
+            if ($user->hasPermission($ability)) {
+                return true;
+            }
+
+            return null;
+        });
 
         // Audit sederhana pengiriman email notifikasi.
         Event::listen(MessageSent::class, function (MessageSent $event) {
@@ -46,4 +67,3 @@ class AppServiceProvider extends ServiceProvider
         });
     }
 }
-

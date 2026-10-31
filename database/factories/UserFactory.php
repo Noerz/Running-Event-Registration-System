@@ -45,11 +45,18 @@ class UserFactory extends Factory
 
     /**
      * Indicate that the user is an admin (panitia).
+     * Role super-admin otomatis dipasang agar admin baru langsung punya akses penuh.
      */
     public function admin(): static
     {
         return $this->state(fn (array $attributes) => [
             'is_admin' => true,
-        ]);
+        ])->afterCreating(function (User $user): void {
+            $roleId = \App\Models\Role::query()->where('code', \App\Models\Role::SUPER_ADMIN)->value('id');
+
+            if ($roleId) {
+                $user->roles()->syncWithoutDetaching([$roleId]);
+            }
+        });
     }
 }

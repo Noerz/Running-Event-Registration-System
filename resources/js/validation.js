@@ -113,13 +113,24 @@ const draftSensitiveFields = new Set([
     'emergency_contact_phone',
 ]);
 
+// Draf yang lebih lama dari ini dihapus otomatis (PII tidak menumpuk di browser).
+const draftMaxAgeMs = 24 * 60 * 60 * 1000;
+
 export function registerFormDraft(Alpine) {
     Alpine.data('formDraft', (key) => ({
         init() {
             let saved = {};
 
             try {
-                saved = JSON.parse(localStorage.getItem(key) || '{}');
+                const raw = JSON.parse(localStorage.getItem(key) || 'null');
+
+                if (raw && typeof raw === 'object' && raw.data) {
+                    if (Date.now() - Number(raw.savedAt ?? 0) < draftMaxAgeMs) {
+                        saved = raw.data;
+                    } else {
+                        localStorage.removeItem(key);
+                    }
+                }
             } catch {
                 saved = {};
             }
@@ -155,7 +166,7 @@ export function registerFormDraft(Alpine) {
             }
 
             try {
-                localStorage.setItem(key, JSON.stringify(data));
+                localStorage.setItem(key, JSON.stringify({ savedAt: Date.now(), data }));
             } catch {
                 // Abaikan bila Safari menolak localStorage.
             }

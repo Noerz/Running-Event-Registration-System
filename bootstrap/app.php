@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -14,6 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->append(SecurityHeaders::class);
+
         // Percayai proxy hanya yang terdaftar eksplisit (VS Code tunnel / ngrok / load balancer).
         // Jangan '*': spoof X-Forwarded-For bisa memalsukan $request->ip() dan membobol rate limiter.
         $trustedProxies = array_values(array_filter(array_map('trim', explode(',', (string) env('TRUSTED_PROXIES', '')))));
@@ -34,6 +37,10 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Pengguna yang sudah login tidak melihat halaman login lagi.
         $middleware->redirectUsersTo(fn () => route('admin.dashboard'));
+
+        $middleware->alias([
+            'permission' => \App\Http\Middleware\EnsurePermission::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (PostTooLargeException $e, Request $request) {

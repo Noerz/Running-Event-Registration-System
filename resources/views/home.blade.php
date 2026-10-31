@@ -48,9 +48,9 @@
                     <p class="eyebrow text-slate-600">Menuju Hari-H</p>
                     <div class="mt-3 grid max-w-lg grid-cols-4 divide-x divide-slate-200 border border-slate-200">
                         @foreach ([['Hari', 'days'], ['Jam', 'hours'], ['Menit', 'minutes'], ['Detik', 'seconds']] as [$labelText, $key])
-                            <div class="px-2 py-4 text-center">
-                                <div class="font-display text-3xl font-bold tabular-nums text-slate-900 sm:text-4xl" x-text="String({{ $key }}).padStart(2, '0')">--</div>
-                                <div class="mt-1 text-[11px] font-medium uppercase tracking-widest text-slate-600">{{ $labelText }}</div>
+                            <div class="px-1 py-3 text-center sm:px-2 sm:py-4">
+                                <div class="font-display text-2xl font-bold tabular-nums text-slate-900 sm:text-4xl" x-text="String({{ $key }}).padStart(2, '0')">--</div>
+                                <div class="mt-1 text-[10px] font-medium uppercase tracking-wide text-slate-600 sm:text-[11px] sm:tracking-widest">{{ $labelText }}</div>
                             </div>
                         @endforeach
                     </div>

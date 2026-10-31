@@ -107,7 +107,7 @@
                         <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5z"/></svg>
                         Lihat Kode QRIS
                     </button>
-                    <x-bank-modal :accounts="config('registration.bank_accounts')" />
+                    <x-bank-modal />
                     <x-qris-modal />
                 </div>
                 <x-form-field name="amount" label="Nominal Pembayaran" type="number" required rules="required|numeric|minnum:1"
@@ -144,7 +144,7 @@
             @error('agree_terms')<p class="mt-2 text-xs font-medium text-red-700">{{ $message }}</p>@enderror
         </section>
 
-        <div class="sticky bottom-0 mt-10 flex flex-col gap-3 border-t border-slate-200 bg-white py-4 sm:flex-row-reverse sm:items-center sm:justify-between">
+        <div class="mt-10 flex flex-col gap-3 border-t border-slate-200 bg-white py-4 sm:sticky sm:bottom-0 sm:flex-row-reverse sm:items-center sm:justify-between">
             <button type="submit" class="btn-primary !px-8 !py-3 !text-base">
                 Kirim Pendaftaran
             </button>

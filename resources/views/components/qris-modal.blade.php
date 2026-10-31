@@ -1,16 +1,15 @@
 @props(['id' => 'qris-modal'])
 
 @php
-    $qrisImage = (string) config('registration.qris_image');
-    $qrisExists = $qrisImage !== '' && file_exists(public_path($qrisImage));
+    $qrisUrl = \App\Models\Setting::getQrisUrl();
 @endphp
 
-<div id="{{ $id }}" x-data="{ open: false }"
+<div id="{{ $id }}"
+    x-data="{ open: false }"
     @open-qris.window="open = true"
     x-effect="document.body.style.overflow = open ? 'hidden' : ''"
     x-cloak>
     <div x-show="open" class="fixed inset-0 z-[70] flex items-center justify-center p-4">
-        <!-- Backdrop klik untuk menutup -->
         <div class="absolute inset-0 bg-slate-950/70" @click="open = false"></div>
 
         <div class="relative z-10 w-full max-w-sm rounded-sm border border-slate-200 bg-white p-6 shadow-xl">
@@ -26,30 +25,31 @@
                 </button>
             </div>
 
-            <div class="mt-4 rounded-sm bg-white p-3 border border-slate-200">
-                @if ($qrisExists)
-                    <img src="{{ asset($qrisImage) }}" alt="Kode QRIS pembayaran" class="mx-auto w-full rounded-sm object-contain">
+            <div class="mt-4 rounded-sm border border-slate-200 bg-white p-3">
+                @if ($qrisUrl)
+                    <img src="{{ $qrisUrl }}" alt="Kode QRIS Pembayaran"
+                        class="mx-auto max-h-80 w-full rounded-sm object-contain">
                 @else
                     <div class="flex aspect-square w-full flex-col items-center justify-center gap-2 rounded-sm border-2 border-dashed border-slate-300 bg-slate-50 p-6 text-center">
-                        <svg class="h-10 w-10 text-slate-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5z"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 6.75h.75v.75h-.75v-.75zM6.75 16.5h.75v.75h-.75v-.75zM16.5 6.75h.75v.75h-.75v-.75zM13.5 13.5h.75v.75h-.75v-.75zM13.5 19.5h.75v.75h-.75v-.75zM19.5 13.5h.75v.75h-.75v-.75zM19.5 19.5h.75v.75h-.75v-.75zM16.5 16.5h.75v.75h-.75v-.75z"/></svg>
-                        <p class="text-sm font-semibold text-slate-600">Gambar QRIS belum diunggah</p>
-                        <p class="text-xs text-slate-600">Panitia perlu menaruh file QRIS di <code class="rounded bg-slate-200 px-1">public/{{ $qrisImage }}</code></p>
+                        <svg class="h-10 w-10 text-slate-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5z" />
+                        </svg>
+                        <p class="text-sm font-semibold text-slate-600">Gambar QRIS Belum Tersedia</p>
+                        <p class="text-xs text-slate-500">Panitia belum mengunggah kode QRIS pembayaran.</p>
                     </div>
                 @endif
             </div>
 
             <ol class="mt-4 space-y-1.5 text-left text-xs leading-relaxed text-slate-500">
-                <li>1. Scan kode QRIS di atas atau screenshot lalu unggah di aplikasi bank/e-wallet.</li>
-                <li>2. Bayar sesuai nominal kategori lomba.</li>
-                <li>3. Upload bukti pembayaran pada form ini, panitia akan verifikasi manual.</li>
+                <li>1. Scan kode QRIS menggunakan aplikasi bank/e-wallet.</li>
+                <li>2. Pastikan nominal sesuai biaya kategori lomba.</li>
+                <li>3. Upload bukti pembayaran, panitia verifikasi manual.</li>
             </ol>
 
             <button type="button" @click="open = false"
                 class="mt-5 inline-flex w-full items-center justify-center rounded-sm bg-primary-700 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-primary-800">
-                Saya Sudah Bayar — Tutup
+                Saya Sudah Bayar ? Tutup
             </button>
         </div>
     </div>
 </div>
-
-

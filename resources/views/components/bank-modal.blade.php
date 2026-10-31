@@ -1,13 +1,22 @@
-@props(['id' => 'bank-modal', 'accounts' => []])
+@props(['id' => 'bank-modal', 'accounts' => null])
 
-<div id="{{ $id }}" x-data="{
+@php
+    if ($accounts === null) {
+        $accounts = \App\Models\BankAccount::query()->active()->orderBy('order')->orderBy('id')->get();
+        if ($accounts->isEmpty()) {
+            $accounts = config('registration.bank_accounts', []);
+        }
+    }
+@endphp
+
+<div id="{{ $id }}"
+    x-data="{
         open: false,
         copied: null,
         async copy(number, index) {
             try {
                 await navigator.clipboard.writeText(number);
             } catch {
-                // Fallback untuk browser tanpa Clipboard API (mis. HTTP non-localhost).
                 const textarea = document.createElement('textarea');
                 textarea.value = number;
                 textarea.style.position = 'fixed';
@@ -26,7 +35,6 @@
     x-effect="document.body.style.overflow = open ? 'hidden' : ''"
     x-cloak>
     <div x-show="open" class="fixed inset-0 z-[70] flex items-center justify-center p-4">
-        <!-- Backdrop klik untuk menutup -->
         <div class="absolute inset-0 bg-slate-950/70" @click="open = false"></div>
 
         <div class="relative z-10 w-full max-w-sm rounded-sm border border-slate-200 bg-white p-6 shadow-xl">
@@ -43,25 +51,25 @@
             </div>
 
             <div class="mt-4 space-y-3">
-                @forelse ($accounts as $index => $account)
+                @forelse ($accounts as $index => $acc)
                     <div class="flex items-center justify-between gap-3 rounded-sm border border-slate-200 bg-slate-50 p-4">
                         <div class="min-w-0">
-                            <p class="text-xs font-bold uppercase tracking-wide text-slate-500">{{ $account['bank'] }}</p>
-                            <p class="mt-0.5 truncate font-mono text-base font-bold tabular-nums text-slate-900">{{ $account['number'] }}</p>
-                            <p class="truncate text-xs text-slate-500">a.n. {{ $account['holder'] }}</p>
+                            <p class="text-xs font-bold tracking-wide text-slate-500">{{ data_get($acc, 'bank') }}</p>
+                            <p class="mt-0.5 font-mono text-base font-bold tabular-nums text-slate-900">{{ data_get($acc, 'number') }}</p>
+                            <p class="text-xs text-slate-500">a.n. {{ data_get($acc, 'holder') }}</p>
                         </div>
                         <button type="button"
-                            @click="copy(@js($account['number']), {{ $index }})"
+                            @click="copy(@js((string) data_get($acc, 'number')), {{ $index }})"
                             class="inline-flex shrink-0 items-center gap-1.5 rounded-sm px-3 py-2 text-xs font-semibold transition focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
                             :class="copied === {{ $index }} ? 'bg-green-100 text-green-700' : 'bg-primary-700 text-white hover:bg-primary-800'">
-                            <svg x-show="copied !== {{ $index }}" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184"/></svg>
+                            <svg x-show="copied !== {{ $index }}" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75"/></svg>
                             <svg x-show="copied === {{ $index }}" x-cloak class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
                             <span x-text="copied === {{ $index }} ? 'Tersalin!' : 'Salin'"></span>
                         </button>
                     </div>
                 @empty
                     <p class="rounded-sm border-2 border-dashed border-slate-300 bg-slate-50 p-6 text-center text-sm text-slate-500">
-                        Daftar rekening belum diisi oleh panitia.
+                        Nomor rekening belum diisi oleh panitia.
                     </p>
                 @endforelse
             </div>
@@ -74,9 +82,8 @@
 
             <button type="button" @click="open = false"
                 class="mt-5 inline-flex w-full items-center justify-center rounded-sm bg-primary-700 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-primary-800">
-                Saya Sudah Bayar — Tutup
+                Saya Sudah Bayar ? Tutup
             </button>
         </div>
     </div>
 </div>
-

@@ -134,7 +134,7 @@
                         <dt class="text-xs font-medium uppercase tracking-wide text-slate-600">Bukti Pembayaran</dt>
                         <dd class="mt-2 overflow-hidden rounded-sm border border-slate-200 bg-slate-50 p-3 text-center">
                             @php($proofPath = $participant->payment->payment_proof)
-                            @php($proofExists = $proofPath && \Storage::exists($proofPath))
+                            @php($proofExists = $proofPath && \Storage::disk(config('registration.payment_proof_disk'))->exists($proofPath))
 
                             @if ($proofExists)
                                 <button type="button"

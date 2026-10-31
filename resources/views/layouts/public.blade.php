@@ -17,6 +17,8 @@
 </head>
 <body class="min-h-screen bg-white font-sans text-slate-800 antialiased">
 
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-primary-700 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white">Lompat ke konten utama</a>
+
     <!-- Navbar -->
     <header x-data="{ mobileOpen: false }" class="sticky top-0 z-40 border-b border-slate-200 bg-white">
         <nav class="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8" aria-label="Main">
@@ -26,8 +28,8 @@
             </a>
 
             <div class="hidden items-center gap-6 md:flex">
-                <a href="{{ route('home') }}" class="text-sm font-medium text-slate-500 hover:text-slate-900">Beranda</a>
-                <a href="{{ route('check.show') }}" class="text-sm font-medium text-slate-500 hover:text-slate-900">Cek Status</a>
+                <a href="{{ route('home') }}" @if (request()->routeIs('home')) aria-current="page" @endif class="text-sm font-medium {{ request()->routeIs('home') ? 'text-slate-900' : 'text-slate-500 hover:text-slate-900' }}">Beranda</a>
+                <a href="{{ route('check.show') }}" @if (request()->routeIs('check.*')) aria-current="page" @endif class="text-sm font-medium {{ request()->routeIs('check.*') ? 'text-slate-900' : 'text-slate-500 hover:text-slate-900' }}">Cek Status</a>
                 <a href="{{ route('register.create') }}" class="btn-primary !px-4 !py-2">Daftar</a>
             </div>
 
@@ -47,7 +49,7 @@
         </div>
     </header>
 
-    <main class="min-h-[70vh]">
+    <main id="main-content" class="min-h-[70vh]">
         @yield('content')
     </main>
 
@@ -56,7 +58,7 @@
         <div class="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-8 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
             <div class="flex items-center gap-3">
                 <img src="{{ asset('images/logo-160.png') }}" alt="Logo KATAR FUN RUN REG" width="32" height="40" class="h-8 w-auto shrink-0 object-contain">
-                <span class="font-display text-sm font-bold uppercase tracking-tight text-slate-900">RunEvent<span class="text-primary-700">Reg</span></span>
+                <span class="font-display text-sm font-bold uppercase tracking-tight text-slate-900">KatarFun<span class="text-primary-700">Run</span></span>
             </div>
             <p class="text-xs text-slate-600">&copy; {{ date('Y') }} KATAR FUN RUN REG By Noerz</p>
         </div>

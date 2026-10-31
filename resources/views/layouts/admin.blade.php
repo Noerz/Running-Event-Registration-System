@@ -27,19 +27,23 @@
 
         <nav class="space-y-0.5 px-3 py-4">
             @foreach ([
-                ['route' => 'admin.dashboard', 'label' => 'Dashboard'],
-                ['route' => 'admin.participants.*', 'label' => 'Peserta'],
-                ['route' => 'admin.events.*', 'label' => 'Events'],
-                ['route' => 'admin.race-categories.*', 'label' => 'Race Categories'],
-                ['route' => 'admin.users.*', 'label' => 'Admins'],
+                ['route' => 'admin.dashboard', 'label' => 'Dashboard', 'can' => 'dashboard.view'],
+                ['route' => 'admin.participants.*', 'label' => 'Peserta', 'can' => 'participants.view'],
+                ['route' => 'admin.events.*', 'label' => 'Events', 'can' => 'events.view'],
+                ['route' => 'admin.race-categories.*', 'label' => 'Race Categories', 'can' => 'race_categories.view'],
+                ['route' => 'admin.payment-settings.*', 'label' => 'Rekening & QRIS', 'can' => 'payment_settings.view'],
+                ['route' => 'admin.users.*', 'label' => 'Admins', 'can' => 'users.view'],
+                ['route' => 'admin.roles.*', 'label' => 'Role Management', 'can' => 'roles.view'],
             ] as $item)
-                <a href="{{ route($item['route'] === 'admin.dashboard' ? 'admin.dashboard' : str_replace('.*', '', $item['route']).'.index') }}"
-                    class="-ml-3 flex items-center border-l-2 px-4 py-2 text-sm font-medium transition-colors {{ request()->routeIs($item['route']) ? 'border-primary-600 text-slate-900' : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-900' }}">
-                    {{ $item['label'] }}
-                    @if (request()->routeIs($item['route']))
-                        <span class="ml-auto h-1.5 w-1.5 rounded-full bg-primary-700"></span>
-                    @endif
-                </a>
+                @can($item['can'])
+                    <a href="{{ route($item['route'] === 'admin.dashboard' ? 'admin.dashboard' : str_replace('.*', '', $item['route']).'.index') }}"
+                        class="-ml-3 flex items-center border-l-2 px-4 py-2 text-sm font-medium transition-colors {{ request()->routeIs($item['route']) ? 'border-primary-600 text-slate-900' : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-900' }}">
+                        {{ $item['label'] }}
+                        @if (request()->routeIs($item['route']))
+                            <span class="ml-auto h-1.5 w-1.5 rounded-full bg-primary-700"></span>
+                        @endif
+                    </a>
+                @endcan
             @endforeach
         </nav>
 
@@ -68,7 +72,7 @@
             <div class="flex items-center gap-3">
                 <div class="hidden text-right">
                     <p class="text-sm font-semibold leading-tight text-slate-800">{{ auth()->user()?->name }}</p>
-                    <p class="text-xs leading-tight text-slate-600">Administrator</p>
+                    <p class="text-xs leading-tight text-slate-600">{{ auth()->user()?->roleNames() ?? 'Administrator' }}</p>
                 </div>
                 <span class="flex h-9 w-9 items-center justify-center border border-slate-300 bg-white font-display text-sm font-bold uppercase text-slate-700">
                     {{ strtoupper(substr(auth()->user()?->name ?? 'A', 0, 1)) }}
