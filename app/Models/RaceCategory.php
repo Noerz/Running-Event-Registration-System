@@ -13,6 +13,8 @@ class RaceCategory extends Model
         'event_id',
         'name',
         'code',
+        'bib_format',
+        'bib_digits',
         'distance',
         'price',
         'quota',
@@ -26,6 +28,7 @@ class RaceCategory extends Model
             'distance' => 'decimal:2',
             'price' => 'integer',
             'quota' => 'integer',
+            'bib_digits' => 'integer',
             'bib_counter' => 'integer',
         ];
     }
@@ -76,6 +79,20 @@ class RaceCategory extends Model
         return ($distance == floor($distance) ? floor($distance) : $distance).'K';
     }
 
+    public function formatBibNumber(int $sequence = 1): string
+    {
+        $format = $this->bib_format ?: '{code}-{number}';
+        $digits = max(3, min(8, (int) ($this->bib_digits ?: 4)));
+        $num = str_pad((string) $sequence, $digits, '0', STR_PAD_LEFT);
+        $year = $this->event?->event_date?->format('y') ?? date('y');
+
+        return strtr($format, [
+            '{code}' => $this->code,
+            '{number}' => $num,
+            '{year}' => $year,
+        ]);
+    }
+
     /**
      * Mencadangkan satu nomor BIB berikutnya untuk kategori ini secara aman
      * terhadap race condition dengan row locking.
@@ -85,6 +102,7 @@ class RaceCategory extends Model
     public function reserveBibNumber(): array
     {
         $category = static::query()
+            ->with('event')
             ->whereKey($this->getKey())
             ->lockForUpdate()
             ->firstOrFail();
@@ -97,7 +115,7 @@ class RaceCategory extends Model
 
         return [
             // BIB unik dalam satu event (constraint unique di level event_id).
-            'bib_number' => sprintf('%s-%04d', $category->code, $sequence),
+            'bib_number' => $category->formatBibNumber($sequence),
             'sequence' => $sequence,
         ];
     }

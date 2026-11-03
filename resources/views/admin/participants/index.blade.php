@@ -19,7 +19,7 @@
             <select name="category" aria-label="Filter kategori lomba" class="field-control">
                 <option value="">Semua Kategori</option>
                 @foreach ($filterCategories as $category)
-                    <option value="{{ $category->id }}" @selected(request('category') == $category->id)>{{ $category->name }} ({{ $category->code }})</option>
+                    <option value="{{ $category->id }}" @selected(request('category') == $category->id)>{{ $category->event ? $category->event->name.' — ' : '' }}{{ $category->name }} ({{ $category->code }})</option>
                 @endforeach
             </select>
             <select name="status" aria-label="Filter status pendaftaran" class="field-control">
@@ -184,6 +184,16 @@
                                         Reject
                                     </button>
                                 @endif
+                                @can('participants.delete')
+                                    <form action="{{ route('admin.participants.destroy', $participant) }}" method="POST" class="inline"
+                                        x-data onsubmit="return confirm('Hapus peserta {{ $participant->registration_code }} ({{ $participant->full_name }})? Tindakan tidak dapat dibatalkan.')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" aria-label="Hapus peserta {{ $participant->registration_code }}" class="ml-1 inline-flex items-center gap-1 rounded-sm bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100">
+                                            Hapus
+                                        </button>
+                                    </form>
+                                @endcan
                             </td>
                         </tr>
                     @empty

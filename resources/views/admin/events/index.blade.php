@@ -36,10 +36,19 @@
                             </td>
                             <td class="whitespace-nowrap px-5 py-3.5 hidden md:table-cell">{{ $event->event_date->translatedFormat('d M Y') }}</td>
                             <td class="whitespace-nowrap px-5 py-3.5 hidden lg:table-cell">{{ $event->registration_start->translatedFormat('d M') }} — {{ $event->registration_end->translatedFormat('d M Y') }}</td>
-                            <td class="px-5 py-3.5 tabular-nums">{{ $event->race_categories_count }}</td>
+                            <td class="whitespace-nowrap px-5 py-3.5 tabular-nums">
+                                <a href="{{ route('admin.race-categories.index', ['event_id' => $event->id]) }}"
+                                    class="inline-flex items-center gap-1 font-semibold text-primary-700 hover:text-primary-800 hover:underline">
+                                    {{ $event->race_categories_count }} Kategori
+                                </a>
+                                @if ($event->status === \App\Enums\EventStatus::Open && ($event->active_race_categories_count ?? 0) === 0)
+                                    <p class="mt-0.5 text-[11px] font-semibold text-amber-700">Belum ada kategori aktif</p>
+                                @endif
+                            </td>
                             <td class="px-5 py-3.5"><x-status-badge :status="$event->status" /></td>
                             <td class="whitespace-nowrap px-5 py-3.5 text-right">
-                                <a href="{{ route('admin.events.edit', $event) }}" class="inline-flex items-center gap-1 rounded-sm bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-200">Edit</a>
+                                <a href="{{ route('admin.race-categories.index', ['event_id' => $event->id]) }}" class="inline-flex items-center gap-1 rounded-sm bg-primary-50 px-3 py-1.5 text-xs font-semibold text-primary-700 hover:bg-primary-100">Kategori</a>
+                                <a href="{{ route('admin.events.edit', $event) }}" class="ml-1 inline-flex items-center gap-1 rounded-sm bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-200">Edit</a>
                                 <form action="{{ route('admin.events.destroy', $event) }}" method="POST" class="inline"
                                     x-data onsubmit="return confirm('Hapus event ini? Tindakan tidak dapat dibatalkan.')">
                                     @csrf

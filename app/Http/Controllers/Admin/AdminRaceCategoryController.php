@@ -9,28 +9,35 @@ use App\Models\Event;
 use App\Models\RaceCategory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 class AdminRaceCategoryController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
+        $eventId = $request->filled('event_id') ? $request->integer('event_id') : null;
+
         return view('admin.race-categories.index', [
             'categories' => RaceCategory::query()
                 ->with(['event'])
                 ->withCount([
                     'participants as registered_count' => fn ($q) => $q->whereIn('registration_status', ['pending', 'confirmed']),
                 ])
+                ->when($eventId, fn ($q) => $q->where('event_id', $eventId))
                 ->orderBy('event_id')
                 ->orderBy('distance')
-                ->paginate(15),
+                ->paginate(15)
+                ->withQueryString(),
             'events' => Event::query()->orderByDesc('event_date')->get(),
+            'selectedEventId' => $eventId,
         ]);
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
         return view('admin.race-categories.create', [
             'events' => Event::query()->orderByDesc('event_date')->get(),
+            'selectedEventId' => $request->filled('event_id') ? $request->integer('event_id') : null,
         ]);
     }
 

@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AdminParticipantController;
 use App\Http\Controllers\Admin\AdminPaymentSettingController;
 use App\Http\Controllers\Admin\AdminRaceCategoryController;
 use App\Http\Controllers\Admin\AdminRoleController;
+use App\Http\Controllers\Admin\AdminSiteSettingController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\Auth\AdminLoginController;
 use App\Http\Controllers\Admin\ParticipantVerificationController;
@@ -68,6 +69,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('participants/{participant}', [AdminParticipantController::class, 'update'])
             ->middleware('permission:participants.update')
             ->name('participants.update');
+        Route::delete('participants/{participant}', [AdminParticipantController::class, 'destroy'])
+            ->middleware('permission:participants.delete')
+            ->name('participants.destroy');
         Route::get('participants/{participant}/payment-proof', [AdminParticipantController::class, 'paymentProof'])
             ->middleware('permission:participants.view')
             ->name('participants.payment-proof');
@@ -120,6 +124,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
             ->middleware('permission:payment_settings.update')->name('payment-settings.qris.update');
         Route::delete('payment-settings/qris', [AdminPaymentSettingController::class, 'destroyQris'])
             ->middleware('permission:payment_settings.update')->name('payment-settings.qris.destroy');
+
+        Route::get('site-settings', [AdminSiteSettingController::class, 'index'])
+            ->middleware('permission:payment_settings.view')->name('site-settings.index');
+        Route::post('site-settings/hero-image', [AdminSiteSettingController::class, 'updateHeroImage'])
+            ->middleware('permission:payment_settings.update')->name('site-settings.hero-image.update');
+        Route::delete('site-settings/hero-image', [AdminSiteSettingController::class, 'destroyHeroImage'])
+            ->middleware('permission:payment_settings.update')->name('site-settings.hero-image.destroy');
 
         Route::get('users', [AdminUserController::class, 'index'])
             ->middleware('permission:users.view')->name('users.index');

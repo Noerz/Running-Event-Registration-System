@@ -11,7 +11,7 @@
         </a>
         <h1 class="mt-2 font-display text-2xl font-extrabold uppercase tracking-tight text-slate-900">Tambah Kategori</h1>
 
-        <div class="mt-6">@include('admin.race-categories._form', ['events' => $events])</div>
+        <div class="mt-6">@include('admin.race-categories._form', ['events' => $events, 'selectedEventId' => $selectedEventId ?? null])</div>
     </div>
 @endsection
 

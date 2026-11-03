@@ -110,4 +110,76 @@ class AdminParticipantPageTest extends TestCase
             ->assertOk()
             ->assertSee($target->registration_code);
     }
+
+    public function test_admin_with_permission_can_delete_participant_and_cleans_up_storage(): void
+    {
+        Storage::fake('local');
+        $filePath = 'payment-proofs/test-delete-proof.png';
+        Storage::disk('local')->put($filePath, UploadedFile::fake()->create('proof.png', 10, 'image/png')->getContent());
+
+        $admin = $this->createAdmin();
+        $event = $this->createOpenEvent();
+        $category = $event->raceCategories->firstWhere('code', '5K');
+        $participant = $this->createPendingParticipant($event, $category, [
+            'full_name' => 'Peserta Hapus',
+        ]);
+        $participant->payment()->firstOrFail()->update(['payment_proof' => $filePath]);
+
+        $this->actingAs($admin)
+            ->delete(route('admin.participants.destroy', $participant))
+            ->assertRedirect(route('admin.participants.index'))
+            ->assertSessionHas('success');
+
+        $this->assertDatabaseMissing('participants', ['id' => $participant->id]);
+        $this->assertDatabaseMissing('payments', ['participant_id' => $participant->id]);
+        Storage::disk('local')->assertMissing($filePath);
+
+        $this->assertDatabaseHas('activity_logs', [
+            'action' => 'participant_deleted',
+            'admin_id' => $admin->id,
+        ]);
+    }
+
+    public function test_admin_without_delete_permission_cannot_delete_participant(): void
+    {
+        $viewer = $this->createAdminWithRole(\App\Models\Role::VIEWER);
+        $event = $this->createOpenEvent();
+        $category = $event->raceCategories->firstWhere('code', '5K');
+        $participant = $this->createPendingParticipant($event, $category);
+
+        $this->actingAs($viewer)
+            ->delete(route('admin.participants.destroy', $participant))
+            ->assertForbidden();
+
+        $this->assertDatabaseHas('participants', ['id' => $participant->id]);
+    }
+
+    public function test_delete_button_visibility_based_on_permission(): void
+    {
+        $event = $this->createOpenEvent();
+        $category = $event->raceCategories->firstWhere('code', '5K');
+        $participant = $this->createPendingParticipant($event, $category);
+
+        $superAdmin = $this->createAdmin();
+        $this->actingAs($superAdmin)
+            ->get(route('admin.participants.index'))
+            ->assertOk()
+            ->assertSee(route('admin.participants.destroy', $participant));
+
+        $this->actingAs($superAdmin)
+            ->get(route('admin.participants.show', $participant))
+            ->assertOk()
+            ->assertSee('Hapus Peserta');
+
+        $viewer = $this->createAdminWithRole(\App\Models\Role::VIEWER);
+        $this->actingAs($viewer)
+            ->get(route('admin.participants.index'))
+            ->assertOk()
+            ->assertDontSee(route('admin.participants.destroy', $participant));
+
+        $this->actingAs($viewer)
+            ->get(route('admin.participants.show', $participant))
+            ->assertOk()
+            ->assertDontSee('Hapus Peserta');
+    }
 }

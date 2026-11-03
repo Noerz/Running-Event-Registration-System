@@ -9,12 +9,31 @@
             <h1 class="font-display text-2xl font-extrabold uppercase tracking-tight text-slate-900">Race Categories</h1>
             <p class="mt-1 text-sm text-slate-500">Kelola kategori, harga, dan kuota perlombaan.</p>
         </div>
-        <a href="{{ route('admin.race-categories.create') }}" class="btn-primary">
+        <a href="{{ route('admin.race-categories.create', request()->filled('event_id') ? ['event_id' => request('event_id')] : []) }}" class="btn-primary">
             + Tambah Kategori
         </a>
     </div>
 
-    <div class="mt-6 overflow-hidden border border-slate-200 bg-white">
+    <form method="GET" action="{{ route('admin.race-categories.index') }}" class="mt-6 border border-slate-200 bg-white p-4 sm:p-5">
+        <div class="flex flex-wrap items-center gap-3">
+            <label for="event_id" class="text-xs font-bold uppercase tracking-wider text-slate-500">Filter Event:</label>
+            <select id="event_id" name="event_id" onchange="this.form.submit()" class="field-control max-w-xs py-1.5 text-sm">
+                <option value="">Semua Event</option>
+                @foreach ($events as $event)
+                    <option value="{{ $event->id }}" @selected((string) request('event_id') === (string) $event->id)>
+                        {{ $event->name }} ({{ $event->event_date->format('Y') }})
+                    </option>
+                @endforeach
+            </select>
+            @if (request()->filled('event_id'))
+                <a href="{{ route('admin.race-categories.index') }}" class="text-xs font-semibold text-slate-500 underline hover:text-slate-800">
+                    Reset Filter
+                </a>
+            @endif
+        </div>
+    </form>
+
+    <div class="mt-4 overflow-hidden border border-slate-200 bg-white">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-slate-200 text-sm">
                 <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
@@ -33,6 +52,7 @@
                         <tr class="hover:bg-slate-50/70">
                             <td class="px-5 py-3.5">
                                 <span class="font-mono text-xs font-bold text-primary-700">{{ $category->code }}</span>
+                                <span class="ml-1.5 font-mono text-[11px] text-slate-400">(BIB: {{ $category->formatBibNumber(1) }})</span>
                                 <p class="font-semibold text-slate-800">{{ $category->name }}</p>
                             </td>
                             <td class="px-5 py-3.5 hidden md:table-cell">{{ $category->event?->name }}</td>

@@ -27,7 +27,7 @@ class Role extends Model
             'is_system' => false,
             'permissions' => [
                 'dashboard.view',
-                'participants.view', 'participants.update', 'participants.verify',
+                'participants.view', 'participants.update', 'participants.delete', 'participants.verify',
                 'events.view', 'events.create', 'events.update', 'events.delete',
                 'race_categories.view', 'race_categories.create', 'race_categories.update', 'race_categories.delete',
                 'payment_settings.view', 'payment_settings.update',

@@ -15,7 +15,10 @@ class AdminEventController extends Controller
     {
         return view('admin.events.index', [
             'events' => Event::query()
-                ->withCount(['raceCategories'])
+                ->withCount([
+                    'raceCategories',
+                    'raceCategories as active_race_categories_count' => fn ($q) => $q->where('status', 'active'),
+                ])
                 ->orderByDesc('event_date')
                 ->paginate(10),
         ]);
@@ -32,11 +35,17 @@ class AdminEventController extends Controller
 
         return redirect()
             ->route('admin.events.index')
-            ->with('success', "Event \"{$event->name}\" berhasil dibuat.");
+            ->with('success', "Event \"{$event->name}\" berhasil dibuat. Silakan tambahkan kategori perlombaan untuk event ini.");
     }
 
     public function edit(Event $event): View
     {
+        $event->load([
+            'raceCategories' => fn ($q) => $q->withCount([
+                'participants as registered_count' => fn ($p) => $p->whereIn('registration_status', ['pending', 'confirmed']),
+            ])->orderBy('distance'),
+        ]);
+
         return view('admin.events.edit', ['event' => $event]);
     }
 
@@ -44,9 +53,13 @@ class AdminEventController extends Controller
     {
         $event->update($request->validated());
 
+        $warning = $event->status === \App\Enums\EventStatus::Open && $event->activeRaceCategories()->count() === 0
+            ? ' Perhatian: Event dibuka tetapi belum memiliki kategori aktif.'
+            : '';
+
         return redirect()
             ->route('admin.events.index')
-            ->with('success', "Event \"{$event->name}\" berhasil diperbarui.");
+            ->with('success', "Event \"{$event->name}\" berhasil diperbarui.{$warning}");
     }
 
     public function destroy(Event $event): RedirectResponse

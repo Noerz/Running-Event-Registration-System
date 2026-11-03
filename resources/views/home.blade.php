@@ -33,8 +33,7 @@
                 </div>
 
                 <figure class="hidden lg:block">
-                    {{-- Ganti public/images/hero.jpg dengan foto event Anda --}}
-                    <img src="{{ asset('images/hero-900.jpg') }}" alt="Foto suasana lomba" width="900" height="837"
+                    <img src="{{ \App\Models\Setting::getHeroUrl() }}" alt="Foto suasana lomba" width="900" height="837"
                         class="aspect-[4/5] w-full object-cover grayscale-[15%]">
                     <figcaption class="mt-2 text-right text-xs text-slate-600">{{ $event->location }} — {{ $event->event_date->translatedFormat('Y') }}</figcaption>
                 </figure>

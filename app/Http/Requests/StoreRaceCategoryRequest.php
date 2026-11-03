@@ -24,6 +24,8 @@ class StoreRaceCategoryRequest extends FormRequest
                 'max:10',
                 Rule::unique('race_categories', 'code')->where('event_id', $this->input('event_id')),
             ],
+            'bib_format' => ['required', 'string', 'max:25', 'regex:/\{number\}/'],
+            'bib_digits' => ['required', 'integer', 'min:3', 'max:8'],
             'distance' => ['required', 'numeric', 'min:0.1', 'max:500'],
             'price' => ['required', 'integer', 'min:0'],
             'quota' => ['required', 'integer', 'min:1', 'max:100000'],
@@ -35,7 +37,16 @@ class StoreRaceCategoryRequest extends FormRequest
     {
         $this->merge([
             'code' => strtoupper(trim((string) $this->input('code'))),
+            'bib_format' => trim((string) ($this->input('bib_format') ?: '{code}-{number}')),
+            'bib_digits' => $this->input('bib_digits') ?: 4,
         ]);
+    }
+
+    public function messages(): array
+    {
+        return [
+            'bib_format.regex' => 'Format BIB wajib menyertakan placeholder {number} agar nomor peserta tetap unik.',
+        ];
     }
 
     public function attributes(): array
@@ -44,6 +55,8 @@ class StoreRaceCategoryRequest extends FormRequest
             'event_id' => 'event',
             'name' => 'nama kategori',
             'code' => 'kode kategori',
+            'bib_format' => 'format nomor BIB',
+            'bib_digits' => 'jumlah digit nomor BIB',
             'distance' => 'jarak',
             'price' => 'harga',
             'quota' => 'kuota',

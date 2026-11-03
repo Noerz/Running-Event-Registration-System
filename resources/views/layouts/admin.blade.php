@@ -32,6 +32,7 @@
                 ['route' => 'admin.events.*', 'label' => 'Events', 'can' => 'events.view'],
                 ['route' => 'admin.race-categories.*', 'label' => 'Race Categories', 'can' => 'race_categories.view'],
                 ['route' => 'admin.payment-settings.*', 'label' => 'Rekening & QRIS', 'can' => 'payment_settings.view'],
+                ['route' => 'admin.site-settings.*', 'label' => 'Pengaturan Web', 'can' => 'payment_settings.view'],
                 ['route' => 'admin.users.*', 'label' => 'Admins', 'can' => 'users.view'],
                 ['route' => 'admin.roles.*', 'label' => 'Role Management', 'can' => 'roles.view'],
             ] as $item)

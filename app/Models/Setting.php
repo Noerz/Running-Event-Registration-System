@@ -57,4 +57,21 @@ class Setting extends Model
 
         return ! empty($custom) && \Illuminate\Support\Facades\Storage::disk('public')->exists($custom);
     }
+
+    public static function getHeroUrl(): string
+    {
+        $custom = static::get('home_hero_image');
+        if ($custom && \Illuminate\Support\Facades\Storage::disk('public')->exists($custom)) {
+            return '/storage/' . ltrim($custom, '/');
+        }
+
+        return asset('images/hero-900.jpg');
+    }
+
+    public static function isCustomHero(): bool
+    {
+        $custom = static::get('home_hero_image');
+
+        return ! empty($custom) && \Illuminate\Support\Facades\Storage::disk('public')->exists($custom);
+    }
 }

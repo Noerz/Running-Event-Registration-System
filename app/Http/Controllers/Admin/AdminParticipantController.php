@@ -40,7 +40,7 @@ class AdminParticipantController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        $filterCategories = RaceCategory::query()->orderBy('distance')->get();
+        $filterCategories = RaceCategory::query()->with('event')->orderBy('event_id')->orderBy('distance')->get();
 
         return view('admin.participants.index', [
             'participants' => $participants,
@@ -99,5 +99,28 @@ class AdminParticipantController extends Controller
         } catch (FileNotFoundException) {
             abort(404, 'File bukti pembayaran tidak ditemukan pada storage.');
         }
+    }
+
+    public function destroy(Request $request, Participant $participant, PaymentProofService $proofs): RedirectResponse
+    {
+        $code = $participant->registration_code;
+        $name = $participant->full_name;
+
+        if ($participant->payment) {
+            $proofs->delete($participant->payment);
+        }
+
+        $participant->delete();
+
+        ActivityLog::record(
+            action: 'participant_deleted',
+            subject: null,
+            adminId: $request->user()?->getKey(),
+            description: "Data peserta {$code} ({$name}) dihapus oleh {$request->user()?->name}.",
+        );
+
+        return redirect()
+            ->route('admin.participants.index')
+            ->with('success', "Peserta {$name} ({$code}) berhasil dihapus.");
     }
 }

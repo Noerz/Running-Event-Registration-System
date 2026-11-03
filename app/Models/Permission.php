@@ -15,6 +15,7 @@ class Permission extends Model
         'dashboard.view' => ['dashboard', 'Lihat dashboard'],
         'participants.view' => ['participants', 'Lihat data peserta'],
         'participants.update' => ['participants', 'Ubah data peserta'],
+        'participants.delete' => ['participants', 'Hapus data peserta'],
         'participants.verify' => ['participants', 'Verifikasi / tolak pembayaran'],
         'events.view' => ['events', 'Lihat event'],
         'events.create' => ['events', 'Tambah event'],
