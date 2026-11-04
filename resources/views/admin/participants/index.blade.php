@@ -28,7 +28,7 @@
                     <option value="{{ $status->value }}" @selected(request('status') === $status->value)>{{ $status->label() }}</option>
                 @endforeach
             </select>
-            <button type="submit" class="btn-primary">
+            <button type="submit" class="btn-primary" data-loading-text="Memfilter…">
                 Filter
             </button>
         </div>
@@ -185,14 +185,20 @@
                                     </button>
                                 @endif
                                 @can('participants.delete')
-                                    <form action="{{ route('admin.participants.destroy', $participant) }}" method="POST" class="inline"
-                                        x-data onsubmit="return confirm('Hapus peserta {{ $participant->registration_code }} ({{ $participant->full_name }})? Tindakan tidak dapat dibatalkan.')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" aria-label="Hapus peserta {{ $participant->registration_code }}" class="ml-1 inline-flex items-center gap-1 rounded-sm bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100">
-                                            Hapus
-                                        </button>
-                                    </form>
+                                    <button type="button"
+                                        @click="$dispatch('open-confirm-modal', {
+                                            url: '{{ route('admin.participants.destroy', $participant) }}',
+                                            method: 'DELETE',
+                                            heading: 'Hapus Peserta',
+                                            description: 'Hapus peserta {{ $participant->registration_code }} ({{ addslashes($participant->full_name) }})? Data yang telah dihapus tidak dapat dikembalikan.',
+                                            confirmText: 'Ya, Hapus Peserta',
+                                            loadingText: 'Menghapus…',
+                                            danger: true
+                                        })"
+                                        aria-label="Hapus peserta {{ $participant->registration_code }}"
+                                        class="ml-1 inline-flex items-center gap-1 rounded-sm bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100">
+                                        Hapus
+                                    </button>
                                 @endcan
                             </td>
                         </tr>
@@ -215,7 +221,6 @@
         @endif
     </div>
 
-    <x-confirm-modal />
     <x-proof-lightbox />
 @endsection
 

@@ -49,13 +49,21 @@
         </nav>
 
         <div class="absolute inset-x-0 bottom-0 border-t border-slate-200 p-3">
-            <form method="POST" action="{{ route('admin.logout') }}">
-                @csrf
-                <button type="submit" class="flex w-full items-center gap-2 px-2 py-2 text-sm font-medium text-slate-500 hover:text-slate-900">
-                    <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/></svg>
-                    Keluar
-                </button>
-            </form>
+            <button type="button"
+                @click="$dispatch('open-confirm-modal', {
+                    url: '{{ route('admin.logout') }}',
+                    method: 'POST',
+                    heading: 'Keluar Akun',
+                    description: 'Yakin ingin keluar dari sesi admin Anda saat ini?',
+                    confirmText: 'Ya, Keluar',
+                    cancelText: 'Tetap di Sini',
+                    loadingText: 'Keluar…',
+                    danger: true
+                })"
+                class="flex w-full items-center gap-2 px-2 py-2 text-sm font-medium text-slate-500 hover:text-slate-900">
+                <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/></svg>
+                Keluar
+            </button>
         </div>
     </aside>
 
@@ -90,6 +98,8 @@
         </main>
     </div>
 </div>
+
+<x-confirmation-dialog />
 
 @stack('scripts')
 </body>

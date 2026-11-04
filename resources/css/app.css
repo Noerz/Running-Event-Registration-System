@@ -60,6 +60,19 @@
     display: none !important;
 }
 
+/* Progress bar global di atas layar saat navigasi & submit form */
+.page-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 0;
+    background-color: var(--color-primary-600, #ea580c);
+    z-index: 99999;
+    pointer-events: none;
+    transition: width 0.25s ease-out;
+}
+
 @layer components {
     /* Kontrol input/select/textarea: kotak, border tipis, fokus hitam. */
     .field-control {

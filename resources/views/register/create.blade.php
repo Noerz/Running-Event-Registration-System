@@ -12,7 +12,11 @@
         </div>
     </div>
 
-    <form action="{{ route('register.store') }}" method="POST" enctype="multipart/form-data" x-data="formDraft('registration-form')" class="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+    <form action="{{ route('register.store') }}" method="POST" enctype="multipart/form-data" x-data="formDraft('registration-form')"
+        data-confirm="Pastikan seluruh data dan bukti pembayaran sudah benar. Kirim pendaftaran sekarang?"
+        data-confirm-heading="Kirim Pendaftaran"
+        data-confirm-text="Ya, Kirim Pendaftaran"
+        class="mx-auto max-w-3xl px-4 py-10 sm:px-6">
         @csrf
 
         <x-flash-alert type="error" />
@@ -145,7 +149,7 @@
         </section>
 
         <div class="mt-10 flex flex-col gap-3 border-t border-slate-200 bg-white py-4 sm:sticky sm:bottom-0 sm:flex-row-reverse sm:items-center sm:justify-between">
-            <button type="submit" class="btn-primary !px-8 !py-3 !text-base">
+            <button type="submit" class="btn-primary !px-8 !py-3 !text-base" data-loading-text="Mengirim Pendaftaran…">
                 Kirim Pendaftaran
             </button>
             <p class="text-xs text-slate-600">Data akan diverifikasi panitia sebelum BIB Number diterbitkan.</p>

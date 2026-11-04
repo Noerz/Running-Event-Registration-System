@@ -45,16 +45,23 @@
                             <p class="mt-1 text-xs font-medium text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
-                    <button type="submit" class="btn-primary">Simpan Gambar</button>
+                    <button type="submit" class="btn-primary" data-loading-text="Mengunggah…">Simpan Gambar</button>
                 </form>
 
                 @if ($heroIsCustom)
-                    <form action="{{ route('admin.site-settings.hero-image.destroy') }}" method="POST"
-                        onsubmit="return confirm('Hapus gambar halaman utama kustom dan kembali ke gambar default?')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="text-xs font-semibold text-red-600 hover:underline">Hapus gambar kustom</button>
-                    </form>
+                    <button type="button"
+                        @click="$dispatch('open-confirm-modal', {
+                            url: '{{ route('admin.site-settings.hero-image.destroy') }}',
+                            method: 'DELETE',
+                            heading: 'Hapus Gambar Hero',
+                            description: 'Hapus gambar halaman utama kustom dan kembali ke gambar default?',
+                            confirmText: 'Ya, Hapus Gambar',
+                            loadingText: 'Menghapus…',
+                            danger: true
+                        })"
+                        class="text-xs font-semibold text-red-600 hover:underline">
+                        Hapus gambar kustom
+                    </button>
                 @endif
             </div>
         </div>

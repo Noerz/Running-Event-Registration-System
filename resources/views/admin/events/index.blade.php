@@ -49,12 +49,19 @@
                             <td class="whitespace-nowrap px-5 py-3.5 text-right">
                                 <a href="{{ route('admin.race-categories.index', ['event_id' => $event->id]) }}" class="inline-flex items-center gap-1 rounded-sm bg-primary-50 px-3 py-1.5 text-xs font-semibold text-primary-700 hover:bg-primary-100">Kategori</a>
                                 <a href="{{ route('admin.events.edit', $event) }}" class="ml-1 inline-flex items-center gap-1 rounded-sm bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-200">Edit</a>
-                                <form action="{{ route('admin.events.destroy', $event) }}" method="POST" class="inline"
-                                    x-data onsubmit="return confirm('Hapus event ini? Tindakan tidak dapat dibatalkan.')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="ml-1 inline-flex items-center gap-1 rounded-sm bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100">Hapus</button>
-                                </form>
+                                <button type="button"
+                                    @click="$dispatch('open-confirm-modal', {
+                                        url: '{{ route('admin.events.destroy', $event) }}',
+                                        method: 'DELETE',
+                                        heading: 'Hapus Event',
+                                        description: 'Hapus event {{ addslashes($event->name) }}? Tindakan tidak dapat dibatalkan.',
+                                        confirmText: 'Ya, Hapus Event',
+                                        loadingText: 'Menghapus…',
+                                        danger: true
+                                    })"
+                                    class="ml-1 inline-flex items-center gap-1 rounded-sm bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100">
+                                    Hapus
+                                </button>
                             </td>
                         </tr>
                     @empty

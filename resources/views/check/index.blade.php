@@ -20,7 +20,7 @@
                         class="field-control !py-2.5">
                     @error('identifier')<p class="mt-1.5 text-xs font-medium text-red-700">{{ $message }}</p>@enderror
                 </div>
-                <button type="submit" class="btn-primary">
+                <button type="submit" class="btn-primary" data-loading-text="Mencari…">
                     Cari
                 </button>
             </div>

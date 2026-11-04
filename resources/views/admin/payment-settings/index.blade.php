@@ -49,16 +49,23 @@
                             <p class="mt-1 text-xs font-medium text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
-                    <button type="submit" class="btn-primary">Simpan Gambar</button>
+                    <button type="submit" class="btn-primary" data-loading-text="Mengunggah…">Simpan Gambar</button>
                 </form>
 
                 @if ($qrisIsCustom)
-                    <form action="{{ route('admin.payment-settings.qris.destroy') }}" method="POST"
-                        onsubmit="return confirm('Hapus gambar QRIS kustom dan kembali ke gambar default?')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="text-xs font-semibold text-red-600 hover:underline">Hapus gambar kustom</button>
-                    </form>
+                    <button type="button"
+                        @click="$dispatch('open-confirm-modal', {
+                            url: '{{ route('admin.payment-settings.qris.destroy') }}',
+                            method: 'DELETE',
+                            heading: 'Hapus Gambar QRIS',
+                            description: 'Hapus gambar QRIS kustom dan kembali menggunakan gambar default?',
+                            confirmText: 'Ya, Hapus Gambar',
+                            loadingText: 'Menghapus…',
+                            danger: true
+                        })"
+                        class="text-xs font-semibold text-red-600 hover:underline">
+                        Hapus gambar kustom
+                    </button>
                 @endif
             </div>
         </div>
@@ -123,12 +130,19 @@
                                 <button type="button"
                                     @click="edit({{ \Illuminate\Support\Js::from($account->only(['id', 'bank', 'number', 'holder', 'order', 'is_active'])) }})"
                                     class="inline-flex items-center gap-1 rounded-sm bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-200">Edit</button>
-                                <form action="{{ route('admin.payment-settings.bank.destroy', $account) }}" method="POST" class="inline"
-                                    onsubmit="return confirm('Hapus rekening ini?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="ml-1 inline-flex items-center gap-1 rounded-sm bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100">Hapus</button>
-                                </form>
+                                <button type="button"
+                                    @click="$dispatch('open-confirm-modal', {
+                                        url: '{{ route('admin.payment-settings.bank.destroy', $account) }}',
+                                        method: 'DELETE',
+                                        heading: 'Hapus Rekening',
+                                        description: 'Hapus rekening {{ addslashes($account->bank) }} — {{ addslashes($account->number) }}? Rekening yang dihapus tidak dapat dikembalikan.',
+                                        confirmText: 'Ya, Hapus Rekening',
+                                        loadingText: 'Menghapus…',
+                                        danger: true
+                                    })"
+                                    class="ml-1 inline-flex items-center gap-1 rounded-sm bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100">
+                                    Hapus
+                                </button>
                             </td>
                         </tr>
                     @empty
@@ -191,7 +205,7 @@
 
                         <div class="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-end">
                             <button type="button" @click="open = false" class="btn-outline">Batal</button>
-                            <button type="submit" class="btn-primary" x-text="editing ? 'Simpan Perubahan' : 'Tambah'"></button>
+                            <button type="submit" class="btn-primary" data-loading-text="Menyimpan…" x-text="editing ? 'Simpan Perubahan' : 'Tambah'"></button>
                         </div>
                     </form>
                 </div>

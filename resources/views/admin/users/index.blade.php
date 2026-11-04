@@ -52,11 +52,19 @@
                                 @endcan
                                 @can('users.delete')
                                     @unless ($admin->is(auth()->user()))
-                                        <form action="{{ route('admin.users.destroy', $admin) }}" method="POST" class="inline" onsubmit="return confirm('Hapus admin ini?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="ml-1 inline-flex items-center gap-1 rounded-sm bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100">Hapus</button>
-                                        </form>
+                                        <button type="button"
+                                            @click="$dispatch('open-confirm-modal', {
+                                                url: '{{ route('admin.users.destroy', $admin) }}',
+                                                method: 'DELETE',
+                                                heading: 'Hapus Admin',
+                                                description: 'Hapus admin {{ addslashes($admin->name) }} ({{ addslashes($admin->email) }})? Akun yang dihapus tidak dapat dikembalikan.',
+                                                confirmText: 'Ya, Hapus Admin',
+                                                loadingText: 'Menghapus…',
+                                                danger: true
+                                            })"
+                                            class="ml-1 inline-flex items-center gap-1 rounded-sm bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100">
+                                            Hapus
+                                        </button>
                                     @endunless
                                 @endcan
                             </td>

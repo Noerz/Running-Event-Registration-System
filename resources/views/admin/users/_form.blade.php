@@ -40,7 +40,7 @@
 
     <div class="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
         <a href="{{ route('admin.users.index') }}" class="btn-outline w-full sm:w-auto">Batal</a>
-        <button type="submit" class="rounded-sm bg-primary-700 px-6 py-2.5 text-sm font-bold text-white hover:bg-primary-800">
+        <button type="submit" class="rounded-sm bg-primary-700 px-6 py-2.5 text-sm font-bold text-white hover:bg-primary-800" data-loading-text="Menyimpan…">
             {{ isset($admin) ? 'Simpan Perubahan' : 'Tambah Admin' }}
         </button>
     </div>

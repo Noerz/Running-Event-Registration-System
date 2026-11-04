@@ -77,7 +77,7 @@
 
         <div class="mt-6 flex items-center justify-end gap-3">
             <a href="{{ route('admin.participants.show', $participant) }}" class="btn-outline">Batal</a>
-            <button type="submit" class="btn-primary">Simpan Perubahan</button>
+            <button type="submit" class="btn-primary" data-loading-text="Menyimpan…">Simpan Perubahan</button>
         </div>
     </form>
 @endsection

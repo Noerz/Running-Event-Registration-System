@@ -84,17 +84,21 @@
                                 @endcan
                                 @can('roles.delete')
                                     @if (! $role->is_system)
-                                        <form action="{{ route('admin.roles.destroy', $role) }}" method="POST" class="inline"
-                                            onsubmit="return confirm('Yakin ingin menghapus role \'{{ $role->name }}\'?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
-                                                @disabled($role->admins_count > 0)
-                                                title="{{ $role->admins_count > 0 ? 'Role masih digunakan oleh admin' : 'Hapus role' }}"
-                                                class="ml-1 inline-flex items-center gap-1 rounded-sm bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-40">
-                                                Hapus
-                                            </button>
-                                        </form>
+                                        <button type="button"
+                                            @click="$dispatch('open-confirm-modal', {
+                                                url: '{{ route('admin.roles.destroy', $role) }}',
+                                                method: 'DELETE',
+                                                heading: 'Hapus Role',
+                                                description: 'Yakin ingin menghapus role {{ addslashes($role->name) }}? Tindakan tidak dapat dibatalkan.',
+                                                confirmText: 'Ya, Hapus Role',
+                                                loadingText: 'Menghapus…',
+                                                danger: true
+                                            })"
+                                            @disabled($role->admins_count > 0)
+                                            title="{{ $role->admins_count > 0 ? 'Role masih digunakan oleh admin' : 'Hapus role' }}"
+                                            class="ml-1 inline-flex items-center gap-1 rounded-sm bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-40">
+                                            Hapus
+                                        </button>
                                     @endif
                                 @endcan
                             </td>

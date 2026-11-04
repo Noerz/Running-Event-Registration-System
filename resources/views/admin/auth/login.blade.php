@@ -45,7 +45,7 @@
                     <input type="checkbox" name="remember" class="h-4 w-4 rounded-none border-slate-300 text-primary-700 focus:ring-primary-600">
                     Ingat saya
                 </label>
-                <button type="submit" class="btn-dark w-full !py-2.5">
+                <button type="submit" class="btn-dark w-full !py-2.5" data-loading-text="Masuk…">
                     Masuk
                 </button>
             </form>

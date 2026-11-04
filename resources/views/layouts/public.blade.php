@@ -64,6 +64,8 @@
         </div>
     </footer>
 
+    <x-confirmation-dialog />
+
     @stack('scripts')
 </body>
 </html>
