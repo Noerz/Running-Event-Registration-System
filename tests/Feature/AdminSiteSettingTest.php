@@ -57,4 +57,18 @@ class AdminSiteSettingTest extends TestCase
         $this->assertNull(Setting::get('home_hero_image'));
         $this->assertFalse(Setting::isCustomHero());
     }
+
+    public function test_get_hero_url_falls_back_when_storage_driver_fails(): void
+    {
+        Setting::put('home_hero_image', 'site/nonexistent.jpg');
+
+        Storage::shouldReceive('disk')
+            ->with('public')
+            ->andThrow(new \Error('Class "finfo" not found'));
+
+        $url = Setting::getHeroUrl();
+
+        $this->assertSame(asset('images/hero-900.jpg'), $url);
+        $this->assertFalse(Setting::isCustomHero());
+    }
 }

@@ -36,10 +36,24 @@ class Setting extends Model
         Cache::forget("setting:{$key}");
     }
 
+    protected static function storageExists(?string $path): bool
+    {
+        if (! $path) {
+            return false;
+        }
+
+        try {
+            return \Illuminate\Support\Facades\Storage::disk('public')->exists($path);
+        } catch (\Throwable) {
+            return file_exists(public_path('storage/' . ltrim($path, '/')))
+                || file_exists(storage_path('app/public/' . ltrim($path, '/')));
+        }
+    }
+
     public static function getQrisUrl(): ?string
     {
         $custom = static::get('qris_image');
-        if ($custom && \Illuminate\Support\Facades\Storage::disk('public')->exists($custom)) {
+        if ($custom && static::storageExists($custom)) {
             return '/storage/' . ltrim($custom, '/');
         }
 
@@ -53,15 +67,13 @@ class Setting extends Model
 
     public static function isCustomQris(): bool
     {
-        $custom = static::get('qris_image');
-
-        return ! empty($custom) && \Illuminate\Support\Facades\Storage::disk('public')->exists($custom);
+        return static::storageExists(static::get('qris_image'));
     }
 
     public static function getHeroUrl(): string
     {
         $custom = static::get('home_hero_image');
-        if ($custom && \Illuminate\Support\Facades\Storage::disk('public')->exists($custom)) {
+        if ($custom && static::storageExists($custom)) {
             return '/storage/' . ltrim($custom, '/');
         }
 
@@ -70,8 +82,6 @@ class Setting extends Model
 
     public static function isCustomHero(): bool
     {
-        $custom = static::get('home_hero_image');
-
-        return ! empty($custom) && \Illuminate\Support\Facades\Storage::disk('public')->exists($custom);
+        return static::storageExists(static::get('home_hero_image'));
     }
 }
