@@ -57,7 +57,7 @@
             @if (isset($category))
                 <p class="mt-3 text-xs text-slate-600">
                     Nomor berikutnya untuk kategori ini:
-                    <span class="font-mono font-bold text-slate-900">{{ $category->formatBibNumber($category->bib_counter + 1) }}</span>
+                    <span class="font-mono font-bold text-slate-900">{{ $category->formatBibNumber($category->nextBibSequence()) }}</span>
                 </p>
             @endif
         </div>

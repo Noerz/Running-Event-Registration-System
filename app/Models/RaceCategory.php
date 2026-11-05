@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\DB;
 
 class RaceCategory extends Model
 {
@@ -94,8 +93,30 @@ class RaceCategory extends Model
     }
 
     /**
+     * Menghitung urutan nomor BIB terkecil yang belum terpakai (mendukung reuse nomor
+     * peserta yang telah dihapus).
+     */
+    public function nextBibSequence(): int
+    {
+        $usedBibs = Participant::query()
+            ->where('event_id', $this->event_id)
+            ->whereNotNull('bib_number')
+            ->pluck('bib_number')
+            ->flip()
+            ->all();
+
+        $sequence = 1;
+        while (isset($usedBibs[$this->formatBibNumber($sequence)])) {
+            $sequence++;
+        }
+
+        return $sequence;
+    }
+
+    /**
      * Mencadangkan satu nomor BIB berikutnya untuk kategori ini secara aman
-     * terhadap race condition dengan row locking.
+     * terhadap race condition dengan row locking. Mengisi celah urutan nomor BIB
+     * yang kosong bila ada peserta yang telah dihapus.
      *
      * @return array{bib_number: string, sequence: int}
      */
@@ -107,9 +128,7 @@ class RaceCategory extends Model
             ->lockForUpdate()
             ->firstOrFail();
 
-        $sequence = DB::table((new static)->getTable())
-            ->where('id', $category->getKey())
-            ->value('bib_counter') + 1;
+        $sequence = $category->nextBibSequence();
 
         $category->forceFill(['bib_counter' => $sequence])->save();
 

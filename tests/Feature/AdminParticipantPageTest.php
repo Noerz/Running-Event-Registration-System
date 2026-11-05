@@ -161,10 +161,12 @@ class AdminParticipantPageTest extends TestCase
         $participant = $this->createPendingParticipant($event, $category);
 
         $superAdmin = $this->createAdmin();
+        $deleteLabel = 'Hapus peserta '.$participant->registration_code;
+
         $this->actingAs($superAdmin)
             ->get(route('admin.participants.index'))
             ->assertOk()
-            ->assertSee(route('admin.participants.destroy', $participant));
+            ->assertSee($deleteLabel);
 
         $this->actingAs($superAdmin)
             ->get(route('admin.participants.show', $participant))
@@ -175,7 +177,7 @@ class AdminParticipantPageTest extends TestCase
         $this->actingAs($viewer)
             ->get(route('admin.participants.index'))
             ->assertOk()
-            ->assertDontSee(route('admin.participants.destroy', $participant));
+            ->assertDontSee($deleteLabel);
 
         $this->actingAs($viewer)
             ->get(route('admin.participants.show', $participant))

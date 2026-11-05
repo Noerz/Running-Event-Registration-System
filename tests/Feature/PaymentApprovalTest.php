@@ -208,4 +208,54 @@ class PaymentApprovalTest extends TestCase
         $this->assertSame(RegistrationStatus::Pending, $participant->fresh()->registration_status);
         $this->assertNull($participant->fresh()->bib_number);
     }
+
+    public function test_bib_number_of_deleted_participant_is_reused(): void
+    {
+        Mail::fake();
+
+        $admin = $this->createAdmin();
+        $event = $this->createOpenEvent();
+        $category = $event->raceCategories->firstWhere('code', '10K');
+        $service = app(PaymentService::class);
+
+        $first = $this->createPendingParticipant($event, $category);
+        $second = $this->createPendingParticipant($event, $category);
+
+        $service->approve($first, $admin);
+        $service->approve($second, $admin);
+
+        $this->assertSame('10K-0001', $first->fresh()->bib_number);
+        $this->assertSame('10K-0002', $second->fresh()->bib_number);
+
+        // Peserta pertama dihapus: nomor BIB-nya kosong kembali.
+        $first->delete();
+
+        $third = $this->createPendingParticipant($event, $category);
+        $service->approve($third, $admin);
+
+        // Nomor terkecil yang kosong dipakai ulang.
+        $this->assertSame('10K-0001', $third->fresh()->bib_number);
+    }
+
+    public function test_next_bib_sequence_fills_lowest_gap(): void
+    {
+        Mail::fake();
+
+        $admin = $this->createAdmin();
+        $event = $this->createOpenEvent();
+        $category = $event->raceCategories->firstWhere('code', '10K');
+        $service = app(PaymentService::class);
+
+        $participants = collect(range(1, 3))->map(
+            fn () => $this->createPendingParticipant($event, $category)
+        );
+
+        $participants->each(fn ($p) => $service->approve($p, $admin));
+
+        // Hapus BIB kedua, bukan yang terakhir.
+        $participants[1]->delete();
+
+        $this->assertSame(2, $category->fresh()->nextBibSequence());
+        $this->assertSame('10K-0002', $category->fresh()->formatBibNumber($category->fresh()->nextBibSequence()));
+    }
 }
